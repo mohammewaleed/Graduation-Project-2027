@@ -1,0 +1,52 @@
+flowchart LR
+    subgraph Control["Orchestration & Safety Controls"]
+        Orchestrator["ScanOrchestrator (Lifecycle, Progress Emitter, Error Isolation)"]
+        Guardrail["ScopeGuardrail (Allow-List, DNS Check, Origin & Denylist)"]
+        HttpClient["SafeHttpClient (requests.Session, Rate Limiter, Cap 2000, Auth/DVWA Login)"]
+        Soft404["Soft404Calibrator (Baseline Length & Similarity Fingerprint)"]
+    end
+
+    subgraph Surface["Attack Surface Discovery"]
+        Crawler["BFSCrawler (BeautifulSoup4 + lxml, Forms, Links, Params)"]
+        Inventory["EndpointInventory (Normalized Method, Path, Query & Form Fields)"]
+    end
+
+    subgraph Plugins["17-Check Plugin Registry (BaseCheck)"]
+        Registry["CheckRegistry (Auto-Discovery & Quick/Standard/Deep Filter)"]
+        Passive["Passive Checks - 8 (Headers, CSP, Banner, Errors, Cookies, TLS, CSRF, JS)"]
+        Active["Active Safe Checks - 5 (CORS, SQLi Error, SQLi Boolean, Reflected XSS, Open Redirect)"]
+        Discovery["Discovery Checks - 3 (Sensitive Files, Dir Listing, Forced Browsing Admin)"]
+        DeepAuth["Deep Auth Check - 1 (IDOR Heuristic - Tentative)"]
+    end
+
+    subgraph Enrichment["Enrichment & Scoring Pipeline"]
+        Dedup["FindingDeduplicator (SHA-1 Fingerprint & Confidence)"]
+        KBEnrich["RemediationEnricher (kb.json: FastAPI, Flask, Express, PHP, HTML)"]
+        Scorer["RiskScoreCalculator (Weighted 0-100 Score Excl. False Positives)"]
+    end
+
+    Orchestrator -->|"1. Validate target & calibrate"| Guardrail
+    Guardrail -->|"Approved URL"| HttpClient
+    Orchestrator -->|"2. Establish 404 baseline"| Soft404
+    Soft404 --> HttpClient
+    Orchestrator -->|"3. Run BFS crawl"| Crawler
+    Crawler --> HttpClient
+    Crawler -->|"Normalized endpoints"| Inventory
+    Orchestrator -->|"4. Select profile checks"| Registry
+    Registry --> Passive
+    Registry --> Active
+    Registry --> Discovery
+    Registry --> DeepAuth
+    Inventory -->|"CheckContext"| Passive
+    Inventory -->|"CheckContext"| Active
+    Inventory -->|"CheckContext"| Discovery
+    Inventory -->|"CheckContext"| DeepAuth
+    Passive -->|"RawFinding"| Dedup
+    Active -->|"RawFinding"| Dedup
+    Discovery -->|"RawFinding"| Dedup
+    DeepAuth -->|"RawFinding"| Dedup
+    Active --> HttpClient
+    Discovery --> HttpClient
+    DeepAuth --> HttpClient
+    Dedup --> KBEnrich
+    KBEnrich --> Scorer

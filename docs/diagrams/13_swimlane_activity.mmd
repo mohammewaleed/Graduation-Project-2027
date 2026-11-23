@@ -1,0 +1,48 @@
+flowchart TB
+    subgraph Lane1["Developer"]
+        A1["Create Project & Confirm Ownership Checkbox"]
+        A2["Select Profile (Quick / Standard / Deep) & Launch Scan"]
+        A3["Monitor Live SSE Progress & Findings Feed"]
+        A4["Open Fix Modal, Copy Stack Code Fix & Triage Finding"]
+        A5["Re-Scan, Compare Diff (New/Fixed) & Export Report"]
+    end
+
+    subgraph Lane2["FastAPI API"]
+        B1["Validate Input (Pydantic v2) & Enforce Allow-List"]
+        B2["Enqueue Job on ThreadPoolExecutor & Return 202"]
+        B3["Stream SSE Events via /api/scans/{id}/stream"]
+        B4["Serve Filtered Findings, Triage PATCH, Diff & Exports"]
+    end
+
+    subgraph Lane3["Scanner Engine"]
+        C1["Calibrate Soft-404 & Run BFS Crawler (BS4/lxml)"]
+        C2["Execute Curated OWASP Checks with Error Isolation"]
+        C3{"Cancel Event Set?"}
+        C4["Deduplicate (SHA-1) & Compute Risk Score (0-100)"]
+    end
+
+    subgraph Lane4["Database & Remediation KB"]
+        D1["Persist Project & Scan Row (status=queued)"]
+        D2["Store Normalized Endpoints Inventory"]
+        D3["Lookup kb.json Multi-Stack Fixes & Save Findings"]
+        D4["Commit Final Scan Status (completed or cancelled)"]
+    end
+
+    A1 --> B1
+    B1 --> D1
+    D1 --> A2
+    A2 --> B2
+    B2 --> C1
+    B2 --> B3
+    B3 --> A3
+    C1 --> D2
+    D2 --> C2
+    C2 --> C3
+    C3 -->|"No - Continue Checks"| D3
+    D3 --> C4
+    C3 -->|"Yes - Stop Gracefully"| D4
+    C4 --> D4
+    D4 --> B3
+    A3 --> A4
+    A4 --> B4
+    B4 --> A5

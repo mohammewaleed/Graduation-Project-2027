@@ -1,0 +1,44 @@
+flowchart TD
+    START(["START"])
+    IO_IN[/"Input Target URL, Stack, Profile & Ownership Confirmation"/]
+    D_AUTH{"Target Authorized & In Allow-List?"}
+    P_REJECT["Reject Scan (403 TARGET_NOT_ALLOWED)"]
+    P_INIT["Create Scan (Queued), Open SSE Stream & Calibrate Soft-404"]
+    D_REACH{"Target Reachable?"}
+    P_FAIL["Mark Scan Failed & Log Error"]
+    P_CRAWL["Bounded BFS Crawl (Links, Forms, Params) & Persist Endpoints"]
+    D_CRAWL{"Crawl Limit Reached or Cancelled?"}
+    D_PROFILE{"Select Scan Profile"}
+    P_QUICK["Run 8 Passive Checks"]
+    P_STD["+ 5 Active Safe Probes"]
+    P_DEEP["+ 3 Discovery & IDOR Checks"]
+    P_EXEC["Execute Next Check Plugin (Per-Check Error Isolation)"]
+    D_CANCEL{"User Cancelled Scan?"}
+    P_CANCEL["Mark Cancelled & Save Partial Findings"]
+    D_MORE{"More Checks Remaining?"}
+    P_DEDUP["Deduplicate (SHA-1), Score Risk (0-100) & Attach Multi-Stack Fixes"]
+    P_PERSIST["Persist Findings to SQLite / PostgreSQL & Mark Completed"]
+    IO_OUT[/"Display Dashboard, Copy-Ready Fixes & Export JSON / HTML Report"/]
+    END(["END"])
+
+    START --> IO_IN
+    IO_IN --> D_AUTH
+    D_AUTH -- "No" --> P_REJECT --> END
+    D_AUTH -- "Yes" --> P_INIT
+    P_INIT --> D_REACH
+    D_REACH -- "No" --> P_FAIL --> END
+    D_REACH -- "Yes" --> P_CRAWL
+    P_CRAWL --> D_CRAWL
+    D_CRAWL -- "No" --> P_CRAWL
+    D_CRAWL -- "Yes" --> D_PROFILE
+    D_PROFILE -- "Quick" --> P_QUICK --> P_EXEC
+    D_PROFILE -- "Standard" --> P_STD --> P_EXEC
+    D_PROFILE -- "Deep" --> P_DEEP --> P_EXEC
+    P_EXEC --> D_CANCEL
+    D_CANCEL -- "Yes" --> P_CANCEL --> END
+    D_CANCEL -- "No" --> D_MORE
+    D_MORE -- "Yes" --> P_EXEC
+    D_MORE -- "No" --> P_DEDUP
+    P_DEDUP --> P_PERSIST
+    P_PERSIST --> IO_OUT
+    IO_OUT --> END

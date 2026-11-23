@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="500" viewBox="0 0 1080 500">
+
+  <defs>
+    <filter id="shadow" x="-6%" y="-6%" width="114%" height="118%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F172A"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F766E"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#B45309"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#047857"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-open-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F172A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-open-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F766E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="uml-inherit" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 1 1.2 L 10.8 6 L 1 10.8 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    </marker>
+    <marker id="uml-agg" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="uml-comp" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#0F172A" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="arrow-x-red" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 2 2 L 10 10 M 10 2 L 2 10" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-linecap="round"/>
+    </marker>
+  </defs>
+  <rect width="1080" height="500" fill="#FFFFFF"/>
+  <text x="540.0" y="26.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#0F172A">As-Is vs. To-Be Security Testing Workflow</text>
+  <text x="540.0" y="46.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#475569">Shift-Left Developer-First Workflow Eliminating Pre-Release Enterprise DAST Bottlenecks</text>
+  <line x1="36.0" y1="56.0" x2="1044.0" y2="56.0" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="30.0" y="88.0" width="1020.0" height="152.0" rx="10.0" ry="10.0" fill="#FEF2F2" stroke="#F87171" stroke-width="1.6"/>
+  <rect x="42.0" y="75.0" width="285.7" height="26.0" rx="6.0" ry="6.0" fill="#DC2626" stroke="#DC2626" stroke-width="1"/>
+  <text x="184.8" y="92.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">As-Is: Traditional Enterprise DAST Workflow</text>
+  <rect x="58.0" y="122.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#F87171" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="59.0" y="123.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#DC2626" stroke="none" stroke-width="0"/>
+  <text x="146.0" y="159.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#991B1B">Active Coding</text>
+  <text x="146.0" y="178.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(Weeks 1-10)</text>
+  <line x1="230.0" y1="166.0" x2="253.0" y2="166.0" stroke="#DC2626" stroke-width="2.0" marker-end="url(#arrow-red)"/>
+  <rect x="255.0" y="122.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#F87171" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="256.0" y="123.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#DC2626" stroke="none" stroke-width="0"/>
+  <text x="343.0" y="159.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#991B1B">Pre-Release Handoff</text>
+  <text x="343.0" y="178.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(Late Stage)</text>
+  <line x1="427.0" y1="166.0" x2="450.0" y2="166.0" stroke="#DC2626" stroke-width="2.0" marker-end="url(#arrow-red)"/>
+  <rect x="452.0" y="122.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#F87171" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="453.0" y="123.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#DC2626" stroke="none" stroke-width="0"/>
+  <text x="540.0" y="152.4" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#991B1B">Enterprise Suite Setup</text>
+  <text x="540.0" y="171.1" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(Proxy Certs &amp; Policy</text>
+  <text x="540.0" y="185.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Tuning)</text>
+  <line x1="624.0" y1="166.0" x2="647.0" y2="166.0" stroke="#DC2626" stroke-width="2.0" marker-end="url(#arrow-red)"/>
+  <rect x="649.0" y="122.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#F87171" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="650.0" y="123.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#DC2626" stroke="none" stroke-width="0"/>
+  <text x="737.0" y="159.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#991B1B">Raw HTTP Dumps</text>
+  <text x="737.0" y="178.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">&amp; CWE Jargon</text>
+  <line x1="821.0" y1="166.0" x2="844.0" y2="166.0" stroke="#DC2626" stroke-width="2.0" marker-end="url(#arrow-red)"/>
+  <rect x="846.0" y="122.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#F87171" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="847.0" y="123.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#DC2626" stroke="none" stroke-width="0"/>
+  <text x="934.0" y="159.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#991B1B">Costly Late Fixes</text>
+  <text x="934.0" y="178.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">or Ignored Findings</text>
+  <rect x="30.0" y="278.0" width="1020.0" height="196.0" rx="10.0" ry="10.0" fill="#F0FDFA" stroke="#14B8A6" stroke-width="1.6"/>
+  <rect x="42.0" y="265.0" width="308.0" height="26.0" rx="6.0" ry="6.0" fill="#0F766E" stroke="#0F766E" stroke-width="1"/>
+  <text x="196.0" y="282.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">To-Be: Developer-First Local Scanner Workflow</text>
+  <rect x="58.0" y="312.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="59.0" y="313.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="146.0" y="349.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Active Local Coding</text>
+  <text x="146.0" y="368.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(localhost Target App)</text>
+  <line x1="230.0" y1="356.0" x2="253.0" y2="356.0" stroke="#0F766E" stroke-width="2.0" marker-end="url(#arrow-teal)"/>
+  <rect x="255.0" y="312.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="256.0" y="313.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="343.0" y="341.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Step 1: One-Command</text>
+  <text x="343.0" y="357.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Launch</text>
+  <text x="343.0" y="375.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(docker compose up)</text>
+  <line x1="427.0" y1="356.0" x2="450.0" y2="356.0" stroke="#0F766E" stroke-width="2.0" marker-end="url(#arrow-teal)"/>
+  <rect x="452.0" y="312.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="453.0" y="313.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="540.0" y="341.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Step 2: Automated</text>
+  <text x="540.0" y="357.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Crawl</text>
+  <text x="540.0" y="375.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">&amp; 17 OWASP Checks</text>
+  <line x1="624.0" y1="356.0" x2="647.0" y2="356.0" stroke="#0F766E" stroke-width="2.0" marker-end="url(#arrow-teal)"/>
+  <rect x="649.0" y="312.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="650.0" y="313.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="737.0" y="341.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Step 3: Exact Endpoint</text>
+  <text x="737.0" y="357.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Map</text>
+  <text x="737.0" y="375.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">&amp; Copy-Ready Fixes</text>
+  <line x1="821.0" y1="356.0" x2="844.0" y2="356.0" stroke="#0F766E" stroke-width="2.0" marker-end="url(#arrow-teal)"/>
+  <rect x="846.0" y="312.0" width="172.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="847.0" y="313.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="934.0" y="349.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Immediate Code Fix</text>
+  <text x="934.0" y="368.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">&amp; Diff Re-Verification</text>
+  <path d="M 932.0 400.0 L 932.0 431.0 Q 932.0 438.0 925.0 438.0 L 151.0 438.0 Q 144.0 438.0 144.0 431.0 L 144.0 402.0" fill="none" stroke="#0F766E" stroke-width="2.0" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,4" marker-end="url(#arrow-teal)"/>
+  <rect x="439.3" y="427.0" width="197.4" height="22.1" rx="5.0" ry="5.0" fill="#CCFBF1" stroke="#0F766E" stroke-width="1.0"/>
+  <text x="538.0" y="440.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#0F766E">Continuous Local Feedback Loop</text>
+</svg>

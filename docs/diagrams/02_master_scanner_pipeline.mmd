@@ -1,0 +1,37 @@
+flowchart LR
+    subgraph INTAKE["Stage 1: Intake & Safety Guardrail"]
+        direction TB
+        S1["Target URL & Scan Profile (Quick / Standard / Deep)"]
+        S2["Ownership Confirmation & Allow-List Guardrail"]
+        S1 --> S2
+    end
+
+    subgraph DISCOVERY["Stage 2: Bounded Discovery"]
+        direction TB
+        S3["Rate-Limited HTTP Client & Soft-404 Calibration"]
+        S4["Bounded BFS Crawler (Links, Forms & Parameters)"]
+        S3 --> S4
+    end
+
+    subgraph ENGINE["Stage 3: Curated OWASP Top 10 Engine (17 Checks)"]
+        direction TB
+        S5["Passive Checks (8): Headers, CSP, Cookies, Errors, JS"]
+        S6["Active Safe Probes (5): CORS, SQLi, XSS, Open Redirect"]
+        S7["Discovery & Auth Checks (4): Files, Dir Listing, Admin, IDOR"]
+    end
+
+    subgraph OUTPUT["Stage 4: Developer-Experience Output"]
+        direction TB
+        S8["Deduplication, SHA-1 Fingerprint & Risk Scoring"]
+        S9["Remediation KB Enrichment (FastAPI, Flask, Express, PHP, HTML)"]
+        S10["SQLite / PostgreSQL, Live SSE Dashboard & JSON / HTML Reports"]
+        S8 --> S9 --> S10
+    end
+
+    S2 --> S3
+    S4 --> S5
+    S4 --> S6
+    S4 --> S7
+    S5 --> S8
+    S6 --> S8
+    S7 --> S8

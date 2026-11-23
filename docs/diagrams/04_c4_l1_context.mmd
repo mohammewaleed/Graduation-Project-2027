@@ -1,0 +1,17 @@
+flowchart TB
+    Dev["Web Developer / Student (Primary User - Browser)"]
+    Instructor["Team Lead / Capstone Instructor (Academic Reviewer)"]
+
+    Scanner["Lightweight OWASP Top 10 Vulnerability Scanner (Local FastAPI Web App & Engine - Docker / Python venv)"]
+
+    LocalApp["Developer Local Web App (localhost / host.docker.internal)"]
+    Testbench["Validation Testbench Targets (DVWA, OWASP Juice Shop, Local VulnBench)"]
+    Reports["Local Filesystem Exports (JSON & Standalone HTML Developer Reports)"]
+
+    Dev -->|"Manages projects, launches scans, views SSE progress & code fixes (HTTP/SSE :8000)"| Scanner
+    Instructor -->|"Reviews vulnerability trends, triage states & exported reports"| Scanner
+    Scanner -->|"Sends allow-listed, rate-limited non-destructive HTTP probes"| LocalApp
+    Scanner -->|"Executes automated benchmark scans on isolated Docker network"| Testbench
+    Scanner -->|"Exports downloadable developer reports"| Reports
+    LocalApp -->|"Returns HTTP responses, headers, cookies & HTML forms"| Scanner
+    Testbench -->|"Returns HTTP responses for Precision/Recall evaluation"| Scanner

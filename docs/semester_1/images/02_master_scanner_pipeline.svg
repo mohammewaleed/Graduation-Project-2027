@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1168" height="500" viewBox="0 0 1168 500">
+
+  <defs>
+    <filter id="shadow" x="-6%" y="-6%" width="114%" height="118%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F172A"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F766E"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#B45309"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#047857"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-open-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F172A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-open-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F766E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="uml-inherit" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 1 1.2 L 10.8 6 L 1 10.8 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    </marker>
+    <marker id="uml-agg" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="uml-comp" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#0F172A" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="arrow-x-red" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 2 2 L 10 10 M 10 2 L 2 10" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-linecap="round"/>
+    </marker>
+  </defs>
+  <rect width="1168" height="500" fill="#FFFFFF"/>
+  <text x="584.0" y="26.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#0F172A">Master Vulnerability Scanning Pipeline</text>
+  <text x="584.0" y="46.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#475569">Four-Stage Architecture from Safe Target Intake to Developer-Experience Remediation Output</text>
+  <line x1="36.0" y1="56.0" x2="1132.0" y2="56.0" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="30.0" y="92.0" width="250.0" height="376.0" rx="10.0" ry="10.0" fill="#EFF6FF" stroke="#60A5FA" stroke-width="1.6"/>
+  <rect x="42.0" y="79.0" width="227.4" height="26.0" rx="6.0" ry="6.0" fill="#1D4ED8" stroke="#1D4ED8" stroke-width="1"/>
+  <text x="155.7" y="96.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Stage 1: Intake &amp; Safety Guardrail</text>
+  <rect x="316.0" y="92.0" width="250.0" height="376.0" rx="10.0" ry="10.0" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.6"/>
+  <rect x="328.0" y="79.0" width="192.4" height="26.0" rx="6.0" ry="6.0" fill="#0F172A" stroke="#0F172A" stroke-width="1"/>
+  <text x="424.2" y="96.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">Stage 2: Bounded Discovery</text>
+  <rect x="602.0" y="92.0" width="250.0" height="376.0" rx="10.0" ry="10.0" fill="#F0FDFA" stroke="#14B8A6" stroke-width="1.6"/>
+  <rect x="610.0" y="79.0" width="234.0" height="26.0" rx="6.0" ry="6.0" fill="#0F766E" stroke="#0F766E" stroke-width="1"/>
+  <text x="727.0" y="96.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">Stage 3: Curated OWASP Top 10 Engine</text>
+  <rect x="888.0" y="92.0" width="250.0" height="376.0" rx="10.0" ry="10.0" fill="#ECFDF5" stroke="#34D399" stroke-width="1.6"/>
+  <rect x="896.0" y="79.0" width="234.0" height="26.0" rx="6.0" ry="6.0" fill="#047857" stroke="#047857" stroke-width="1"/>
+  <text x="1013.0" y="96.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">Stage 4: Developer-Experience Output</text>
+  <rect x="44.0" y="152.0" width="222.0" height="92.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="45.0" y="153.0" width="6.0" height="90.0" rx="3.0" ry="3.0" fill="#1D4ED8" stroke="none" stroke-width="0"/>
+  <text x="157.0" y="191.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Target URL &amp; Scan Profile</text>
+  <text x="157.0" y="210.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(Quick / Standard / Deep)</text>
+  <rect x="44.0" y="294.0" width="222.0" height="92.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="45.0" y="295.0" width="6.0" height="90.0" rx="3.0" ry="3.0" fill="#1D4ED8" stroke="none" stroke-width="0"/>
+  <text x="157.0" y="333.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Ownership Confirmation &amp;</text>
+  <text x="157.0" y="352.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Allow-List Guardrail</text>
+  <line x1="155.0" y1="244.0" x2="155.0" y2="292.0" stroke="#1D4ED8" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+  <rect x="330.0" y="152.0" width="222.0" height="92.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="331.0" y="153.0" width="6.0" height="90.0" rx="3.0" ry="3.0" fill="#0F172A" stroke="none" stroke-width="0"/>
+  <text x="443.0" y="191.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Rate-Limited HTTP Client &amp;</text>
+  <text x="443.0" y="210.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Soft-404 Calibration</text>
+  <rect x="330.0" y="294.0" width="222.0" height="92.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="331.0" y="295.0" width="6.0" height="90.0" rx="3.0" ry="3.0" fill="#0F172A" stroke="none" stroke-width="0"/>
+  <text x="443.0" y="333.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Bounded BFS Crawler</text>
+  <text x="443.0" y="352.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(Links, Forms &amp; Parameters)</text>
+  <line x1="441.0" y1="244.0" x2="441.0" y2="292.0" stroke="#0F172A" stroke-width="1.8" marker-end="url(#arrow-navy)"/>
+  <text x="727.0" y="126.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#0F766E">17 Curated Non-Destructive Checks</text>
+  <rect x="616.0" y="140.0" width="222.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="617.0" y="141.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="729.0" y="177.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Passive Checks (8)</text>
+  <text x="729.0" y="196.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Headers, CSP, Cookies, Errors, JS</text>
+  <rect x="616.0" y="248.0" width="222.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="617.0" y="249.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#B45309" stroke="none" stroke-width="0"/>
+  <text x="729.0" y="285.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Active Safe Probes (5)</text>
+  <text x="729.0" y="304.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">CORS, SQLi, XSS, Open Redirect</text>
+  <rect x="616.0" y="356.0" width="222.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="617.0" y="357.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#1D4ED8" stroke="none" stroke-width="0"/>
+  <text x="729.0" y="393.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Discovery &amp; Auth Checks (4)</text>
+  <text x="729.0" y="412.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Files, Dir Listing, Admin, IDOR</text>
+  <rect x="902.0" y="134.0" width="222.0" height="86.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#047857" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="903.0" y="135.0" width="6.0" height="84.0" rx="3.0" ry="3.0" fill="#047857" stroke="none" stroke-width="0"/>
+  <text x="1015.0" y="170.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Deduplication, SHA-1</text>
+  <text x="1015.0" y="189.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Fingerprint &amp; Risk Scoring</text>
+  <rect x="902.0" y="246.0" width="222.0" height="90.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#047857" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="903.0" y="247.0" width="6.0" height="88.0" rx="3.0" ry="3.0" fill="#047857" stroke="none" stroke-width="0"/>
+  <text x="1015.0" y="284.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Remediation KB Enrichment</text>
+  <text x="1015.0" y="303.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">(FastAPI, Flask, Express, PHP, HTML)</text>
+  <rect x="902.0" y="360.0" width="222.0" height="88.0" rx="8.0" ry="8.0" fill="#FFFFFF" stroke="#047857" stroke-width="1.6" filter="url(#shadow)"/>
+  <rect x="903.0" y="361.0" width="6.0" height="86.0" rx="3.0" ry="3.0" fill="#047857" stroke="none" stroke-width="0"/>
+  <text x="1015.0" y="397.5" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">SQLite / PostgreSQL, Live SSE</text>
+  <text x="1015.0" y="416.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">Dashboard &amp; JSON / HTML Reports</text>
+  <line x1="1013.0" y1="220.0" x2="1013.0" y2="244.0" stroke="#047857" stroke-width="1.8" marker-end="url(#arrow-green)"/>
+  <line x1="1013.0" y1="336.0" x2="1013.0" y2="358.0" stroke="#047857" stroke-width="1.8" marker-end="url(#arrow-green)"/>
+  <path d="M 266.0 340.0 L 291.0 340.0 Q 298.0 340.0 298.0 333.0 L 298.0 205.0 Q 298.0 198.0 305.0 198.0 L 328.0 198.0" fill="none" stroke="#0F172A" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-navy)"/>
+  <line x1="552.0" y1="340.0" x2="584.0" y2="340.0" stroke="#0F766E" stroke-width="1.8"/>
+  <path d="M 584.0 340.0 L 584.0 191.0 Q 584.0 184.0 591.0 184.0 L 614.0 184.0" fill="none" stroke="#0F766E" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+  <path d="M 584.0 340.0 L 584.0 299.0 Q 584.0 292.0 591.0 292.0 L 614.0 292.0" fill="none" stroke="#0F766E" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+  <path d="M 584.0 340.0 L 584.0 393.0 Q 584.0 400.0 591.0 400.0 L 614.0 400.0" fill="none" stroke="#0F766E" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-teal)"/>
+  <path d="M 838.0 184.0 L 866.8 184.0 Q 870.0 184.0 870.0 180.8 L 870.0 177.0" fill="none" stroke="#047857" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 838.0 292.0 L 863.0 292.0 Q 870.0 292.0 870.0 285.0 L 870.0 177.0" fill="none" stroke="#047857" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M 838.0 400.0 L 863.0 400.0 Q 870.0 400.0 870.0 393.0 L 870.0 177.0" fill="none" stroke="#047857" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="870.0" y1="177.0" x2="900.0" y2="177.0" stroke="#047857" stroke-width="1.8" marker-end="url(#arrow-green)"/>
+</svg>

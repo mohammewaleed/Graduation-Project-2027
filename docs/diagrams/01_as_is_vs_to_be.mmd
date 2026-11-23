@@ -1,0 +1,21 @@
+flowchart LR
+    subgraph ASIS["As-Is: Traditional Enterprise DAST Workflow"]
+        direction LR
+        A1["Active Coding (Weeks 1-10)"]
+        A2["Pre-Release Handoff (Late Stage)"]
+        A3["Enterprise Suite Setup (Proxy Certs & Policy Tuning)"]
+        A4["Raw HTTP Dumps & CWE Jargon"]
+        A5["Costly Late Fixes or Ignored Findings"]
+        A1 --> A2 --> A3 --> A4 --> A5
+    end
+
+    subgraph TOBE["To-Be: Developer-First Local Scanner Workflow"]
+        direction LR
+        B1["Active Local Coding (localhost Target App)"]
+        B2["Step 1: One-Command Launch (docker compose up)"]
+        B3["Step 2: Automated Crawl & 17 OWASP Checks"]
+        B4["Step 3: Exact Endpoint Map & Copy-Ready Fixes"]
+        B5["Immediate Code Fix & Diff Re-Verification"]
+        B1 --> B2 --> B3 --> B4 --> B5
+        B5 -. "Continuous Local Feedback Loop" .-> B1
+    end

@@ -1,0 +1,50 @@
+services:
+  scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: owasp-dx-scanner
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      ENV: "${ENV:-development}"
+      APP_PORT: "${APP_PORT:-8000}"
+      DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/scanner.db}"
+      SCAN_ALLOWLIST: "${SCAN_ALLOWLIST:-localhost,127.0.0.1,host.docker.internal,dvwa,juice-shop,vulnbench}"
+      SCAN_RATE_LIMIT_RPS: "${SCAN_RATE_LIMIT_RPS:-10}"
+      SCAN_MAX_REQUESTS: "${SCAN_MAX_REQUESTS:-2000}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - scanner_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: owasp-dx-postgres
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:-scanner}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-scanner}"
+      POSTGRES_DB: "${POSTGRES_DB:-scanner}"
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scanner} -d ${POSTGRES_DB:-scanner}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  scanner_data:
+  postgres_data:

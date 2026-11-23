@@ -1,0 +1,21 @@
+flowchart TD
+    Start(["Outbound HTTP Request Candidate (method, target_url, scan_ctx)"]) --> G1{"Gate 1: UI Ownership Confirmed?"}
+    G1 -- "No" --> B1["Block Request - 403 OwnershipNotConfirmedError"]
+    G1 -- "Yes" --> G2{"Gate 2: Valid HTTP/HTTPS Scheme and No Embedded Creds?"}
+    G2 -- "No" --> B2["Block Request - 400 InvalidTargetURLError"]
+    G2 -- "Yes" --> G3{"Gate 3: Matches Destructive / Logout Route Denylist?"}
+    G3 -- "Yes (/logout, /signout, /delete, /remove, /reset)" --> S1["Skip Route Safely and Log GuardrailSkip Event"]
+    G3 -- "No" --> G4{"Gate 4: Hostname in Hardcoded Allow-List or RFC1918?"}
+    G4 -- "No (External Domain / Public Host)" --> B3["Block Request - 403 OutOfScopeHostError"]
+    G4 -- "Yes" --> G5["Gate 5: Pre-Request DNS Resolve (socket.getaddrinfo)"]
+    G5 --> G5B{"Every Resolved IP Loopback or RFC1918 Private?"}
+    G5B -- "No (Public IP or Link-Local 169.254.169.254)" --> B4["Block Request - 403 DNSRebindingBlockedError"]
+    G5B -- "Yes" --> G6{"Gate 6: Request Count Under 2000 and Not Cancelled?"}
+    G6 -- "No (Cap Reached or Cancel Event Set)" --> H1["Halt Scan Cleanly (BudgetExceeded / Cancelled)"]
+    G6 -- "Yes" --> G7["Gate 7: Token-Bucket Rate Limiter (Default 10 req/s)"]
+    G7 --> Dispatch["Dispatch Non-Destructive Request (allow_redirects=False, timeout=10s)"]
+    Dispatch --> G8{"Gate 8: Redirect Status (301/302/303/307/308)?"}
+    G8 -- "No" --> Ok(["Return HttpResponse to Crawler / Check Plugin"])
+    G8 -- "Yes" --> G9{"Same-Origin Location and Redirect Hops At Most 5?"}
+    G9 -- "No (Cross-Origin or Hop Limit)" --> B5["Do Not Follow Redirect (Return 3xx for open_redirect Analysis)"]
+    G9 -- "Yes (Resolve Relative Location)" --> G2

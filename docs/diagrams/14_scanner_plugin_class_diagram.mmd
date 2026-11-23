@@ -1,0 +1,136 @@
+classDiagram
+    class ScanOrchestrator {
+        -CheckRegistry registry
+        -SafeHttpClient http_client
+        -BFSCrawler crawler
+        -RemediationEnricher enricher
+        -Event cancel_event
+        +run_scan(scan_id, target_url, profile) ScanSummary
+        +emit_event(event_type, payload) void
+        +compute_risk_score(findings) int
+        -execute_check_isolated(check, ctx) List~RawFinding~
+    }
+
+    class CheckRegistry {
+        -Dict~str, BaseCheck~ checks
+        +register(check_cls) void
+        +discover_plugins() void
+        +get_checks_for_profile(profile) List~BaseCheck~
+        +list_catalog() List~Dict~
+    }
+
+    class BaseCheck {
+        <<abstract>>
+        +str check_id
+        +str name
+        +str category
+        +str owasp_category
+        +str cwe_id
+        +str default_severity
+        +List~str~ profiles
+        +run(ctx) List~RawFinding~*
+        +is_applicable(ctx) bool
+    }
+
+    class CheckContext {
+        +str scan_id
+        +str target_url
+        +str profile
+        +SafeHttpClient http_client
+        +List~EndpointRecord~ endpoints
+        +Soft404Baseline soft404
+        +Event cancel_event
+        +bool auth_enabled
+        +check_cancelled() bool
+    }
+
+    class RawFinding {
+        +str check_id
+        +str title
+        +str severity
+        +str confidence
+        +str http_method
+        +str affected_url
+        +str parameter_name
+        +str evidence_snippet
+        +str endpoint_id
+        +compute_fingerprint() str
+    }
+
+    class EnrichedFinding {
+        +str id
+        +str fingerprint
+        +str owasp_category
+        +str cwe_id
+        +str status
+        +str plain_explanation
+        +RemediationFix remediation
+    }
+
+    class RemediationFix {
+        +str summary
+        +str root_cause
+        +List~str~ verification_steps
+        +Dict~str, CodeSnippet~ stacks
+    }
+
+    class PassiveCheck {
+        <<abstract>>
+        +str category
+        +analyze_response(endpoint, headers, body) List~RawFinding~
+    }
+
+    class ActiveSafeCheck {
+        <<abstract>>
+        +str category
+        +send_non_destructive_probe(ctx, endpoint, payload) Response
+    }
+
+    class DiscoveryCheck {
+        <<abstract>>
+        +str category
+        +probe_wordlist_paths(ctx, paths) List~RawFinding~
+    }
+
+    class DeepAuthCheck {
+        <<abstract>>
+        +str category
+        +compare_object_ids(ctx, endpoint) List~RawFinding~
+    }
+
+    class MissingSecurityHeadersCheck {
+        +str check_id
+        +run(ctx) List~RawFinding~
+    }
+
+    class SqliErrorBasedCheck {
+        +str check_id
+        +run(ctx) List~RawFinding~
+    }
+
+    class SensitiveFilesCheck {
+        +str check_id
+        +run(ctx) List~RawFinding~
+    }
+
+    class IdorHeuristicCheck {
+        +str check_id
+        +run(ctx) List~RawFinding~
+    }
+
+    ScanOrchestrator --> CheckRegistry : queries plugins
+    ScanOrchestrator --> CheckContext : builds and passes
+    ScanOrchestrator ..> EnrichedFinding : enriches and persists
+    CheckRegistry o-- BaseCheck : manages 17 checks
+    BaseCheck ..> CheckContext : reads
+    BaseCheck ..> RawFinding : yields
+    EnrichedFinding --|> RawFinding : extends with KB
+    EnrichedFinding *-- RemediationFix : embeds
+    PassiveCheck --|> BaseCheck
+    ActiveSafeCheck --|> BaseCheck
+    DiscoveryCheck --|> BaseCheck
+    DeepAuthCheck --|> BaseCheck
+    MissingSecurityHeadersCheck --|> PassiveCheck
+    SqliErrorBasedCheck --|> ActiveSafeCheck
+    SensitiveFilesCheck --|> DiscoveryCheck
+    IdorHeuristicCheck --|> DeepAuthCheck

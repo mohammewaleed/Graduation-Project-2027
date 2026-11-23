@@ -1,0 +1,35 @@
+sequenceDiagram
+    autonumber
+    participant Dev as Developer Browser
+    participant API as FastAPI Server
+    participant Reg as Cancel Registry
+    participant Orch as ScanOrchestrator
+    participant ChkA as Plugin Check A
+    participant ChkB as Plugin Check B
+    participant DB as SQLAlchemy DB
+
+    Note over Orch,ChkB: Scenario 1 - Per-Check Error Isolation
+    Orch->>ChkA: run(check_context) inside try/except boundary
+    ChkA--xOrch: Raises ReadTimeout or Unexpected Exception
+    Orch->>Orch: Catch exception, log structured error, record warning
+    Orch-->>API: Emit SSE event check_warning (check_id, error_type)
+    API-->>Dev: SSE data non-fatal warning badge (scan continues)
+
+    Orch->>ChkB: run(check_context)
+    ChkB-->>Orch: Returns List of RawFinding
+    Orch->>DB: Commit enriched findings from Check B
+    Orch-->>API: Emit SSE event finding_discovered
+
+    Note over Dev,DB: Scenario 2 - Cooperative User Cancellation
+    Dev->>API: POST /api/scans/{id}/cancel
+    API->>Reg: Lookup threading.Event for scan_id and call cancel_event.set()
+    API-->>Dev: 202 Accepted (cancellation_requested=true)
+
+    Orch->>Reg: Poll cancel_event.is_set() before next probe or check
+    Reg-->>Orch: True (stop signal active)
+    Orch->>Orch: Halt active probing and preserve committed findings
+    Orch->>Orch: Recompute partial risk_score from committed findings
+    Orch->>DB: UPDATE scans SET status=cancelled, finished_at=now
+    Orch->>Reg: Unregister cancel_event(scan_id)
+    Orch-->>API: Emit SSE event scan_cancelled
+    API-->>Dev: SSE data status=cancelled, partial_findings_preserved=true

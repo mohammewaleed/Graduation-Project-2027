@@ -1,0 +1,43 @@
+flowchart TB
+    subgraph TB1["Trust Boundary 1: Developer Browser (Client Presentation)"]
+        DevUI["Developer Web UI (6 Modular JS Views)"]
+    end
+
+    subgraph TB2["Trust Boundary 2: Scanner Process (Trusted Application Plane)"]
+        P1(("1.0 Validate Input & Auth Config"))
+        P2(("2.0 Schedule Scan & Stream SSE"))
+        P3(("3.0 Crawl & Normalize Endpoints"))
+        P4(("4.0 Run 17 Curated OWASP Checks"))
+        P5(("5.0 Deduplicate, Enrich & Score"))
+        P6(("6.0 Compare Scans & Export Reports"))
+
+        DS1[("D1: Projects & Scans Store")]
+        DS2[("D2: Endpoints & Findings Store")]
+        DS3[("D3: Remediation KB (kb.json)")]
+    end
+
+    subgraph TB3["Trust Boundary 3: Target Network Perimeter (Guardrail Enforced)"]
+        Guard["Scope Guardrail, DNS Verifier & Rate Limiter"]
+        TargetApp["Authorized Target App (Localhost / Testbench)"]
+    end
+
+    DevUI -->|"REST Requests (JSON)"| P1
+    P1 -->|"Validated Project/Scan DTO"| DS1
+    P1 -->|"Authorized Scan Job"| P2
+    P2 -->|"SSE Progress & Finding Events"| DevUI
+    P2 -->|"Start Crawl Context"| P3
+    P3 -->|"HTTP GET Crawl Requests"| Guard
+    Guard -->|"Verified In-Scope Requests"| TargetApp
+    TargetApp -->|"HTML & Headers"| Guard
+    Guard -->|"Filtered Responses"| P3
+    P3 -->|"Endpoint Inventory"| DS2
+    P3 -->|"Attack Surface Context"| P4
+    P4 -->|"Safe OWASP Probe Requests"| Guard
+    Guard -->|"Probe Responses"| P4
+    P4 -->|"RawFinding Stream"| P5
+    DS3 -->|"Multi-Stack Fixes & Plain Causes"| P5
+    P5 -->|"Enriched Findings & Risk Score"| DS2
+    P5 -->|"Scan Completion Metrics"| DS1
+    DS1 -->|"Scan History"| P6
+    DS2 -->|"Findings & Fingerprints"| P6
+    P6 -->|"Diff Results, JSON & HTML Reports"| DevUI

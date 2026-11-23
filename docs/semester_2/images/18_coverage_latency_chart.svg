@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="560" viewBox="0 0 1040 560">
+
+  <defs>
+    <filter id="shadow" x="-6%" y="-6%" width="114%" height="118%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.4" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrow-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F172A"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#0F766E"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#B45309"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#047857"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9.2 5 L 0 8.8 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-open-navy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F172A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-open-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 8.8 5 L 1 8.5" fill="none" stroke="#0F766E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="uml-inherit" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 1 1.2 L 10.8 6 L 1 10.8 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5"/>
+    </marker>
+    <marker id="uml-agg" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="uml-comp" viewBox="0 0 16 10" refX="1" refY="5" markerWidth="13" markerHeight="9" orient="auto">
+      <path d="M 1 5 L 7.5 1 L 14 5 L 7.5 9 Z" fill="#0F172A" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <marker id="arrow-x-red" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M 2 2 L 10 10 M 10 2 L 2 10" fill="none" stroke="#DC2626" stroke-width="2.2" stroke-linecap="round"/>
+    </marker>
+  </defs>
+  <rect width="1040" height="560" fill="#FFFFFF"/>
+  <text x="520.0" y="26.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#0F172A">Target Coverage and Latency SLA Profile (Bars = Coverage %, Line = Duration s)</text>
+  <text x="520.0" y="46.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#475569">Expected Vulnerability Coverage Percentage vs. End-to-End Scan Duration Across Benchmark Profiles</text>
+  <line x1="36.0" y1="56.0" x2="1004.0" y2="56.0" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="104.0" y="118.0" width="882.0" height="348.0" rx="4.0" ry="4.0" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+  <line x1="104.0" y1="466.0" x2="986.0" y2="466.0" stroke="#0F172A" stroke-width="1.6"/>
+  <text x="92.0" y="470.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">0</text>
+  <line x1="104.0" y1="413.0" x2="986.0" y2="413.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="417.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">20</text>
+  <line x1="104.0" y1="360.0" x2="986.0" y2="360.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="364.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">40</text>
+  <line x1="104.0" y1="307.0" x2="986.0" y2="307.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="311.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">60</text>
+  <line x1="104.0" y1="254.0" x2="986.0" y2="254.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="258.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">80</text>
+  <line x1="104.0" y1="201.0" x2="986.0" y2="201.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="205.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">100</text>
+  <line x1="104.0" y1="148.0" x2="986.0" y2="148.0" stroke="#CBD5E1" stroke-width="1.0" stroke-dasharray="4,4"/>
+  <text x="92.0" y="152.0" text-anchor="end" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="400" fill="#475569">120</text>
+  <line x1="104.0" y1="118.0" x2="104.0" y2="466.0" stroke="#0F172A" stroke-width="1.6"/>
+  <text x="38" y="292.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#0F172A" transform="rotate(-90 38 292.0)">Coverage (%) / Duration (s)</text>
+  <rect x="154.2" y="320.2" width="76.0" height="145.8" rx="4.0" ry="4.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.2"/>
+  <rect x="154.8" y="461.0" width="74.8" height="5.0" rx="0.0" ry="0.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="192.2" y="342.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">55%</text>
+  <text x="192.2" y="494.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Quick VulnBench</text>
+  <rect x="330.6" y="214.2" width="76.0" height="251.8" rx="4.0" ry="4.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.2"/>
+  <rect x="331.2" y="461.0" width="74.8" height="5.0" rx="0.0" ry="0.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="368.6" y="236.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">95%</text>
+  <text x="368.6" y="494.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Standard VulnBench</text>
+  <rect x="507.0" y="201.0" width="76.0" height="265.0" rx="4.0" ry="4.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.2"/>
+  <rect x="507.6" y="461.0" width="74.8" height="5.0" rx="0.0" ry="0.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="545.0" y="223.0" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">100%</text>
+  <text x="545.0" y="494.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Deep VulnBench</text>
+  <rect x="683.4" y="232.8" width="76.0" height="233.2" rx="4.0" ry="4.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.2"/>
+  <rect x="684.0" y="461.0" width="74.8" height="5.0" rx="0.0" ry="0.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="721.4" y="254.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">88%</text>
+  <text x="721.4" y="494.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Standard DVWA</text>
+  <rect x="859.8" y="373.2" width="76.0" height="92.8" rx="4.0" ry="4.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.2"/>
+  <rect x="860.4" y="461.0" width="74.8" height="5.0" rx="0.0" ry="0.0" fill="#0D9488" stroke="none" stroke-width="0"/>
+  <text x="897.8" y="395.2" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">35%</text>
+  <text x="897.8" y="494.3" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#0F172A">Standard JuiceShop</text>
+  <path d="M 192.2 444.8 L 368.6 391.8 L 545.0 293.8 L 721.4 354.7 L 897.8 320.2" fill="none" stroke="#DC2626" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>
+  <rect x="556.0" y="76.0" width="430.0" height="30.0" rx="6.0" ry="6.0" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="570.0" y="84.0" width="16.0" height="14.0" rx="2.0" ry="2.0" fill="#0D9488" stroke="#0F766E" stroke-width="1.0"/>
+  <text x="594.0" y="95.0" text-anchor="start" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#0F172A">Coverage Target (%)</text>
+  <line x1="771.0" y1="91.0" x2="797.0" y2="91.0" stroke="#DC2626" stroke-width="2.8"/>
+  <circle cx="784.0" cy="91.0" r="4.5" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.2"/>
+  <text x="805.0" y="95.0" text-anchor="start" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="700" fill="#0F172A">Latency SLA (seconds)</text>
+  <circle cx="192.2" cy="444.8" r="6.2" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.6"/>
+  <rect x="179.4" y="414.4" width="25.7" height="20.8" rx="5.0" ry="5.0" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.0"/>
+  <text x="192.2" y="426.9" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#DC2626">8s</text>
+  <circle cx="368.6" cy="391.8" r="6.2" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.6"/>
+  <rect x="352.6" y="361.4" width="32.0" height="20.8" rx="5.0" ry="5.0" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.0"/>
+  <text x="368.6" y="373.9" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#DC2626">28s</text>
+  <circle cx="545.0" cy="293.8" r="6.2" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.6"/>
+  <rect x="529.0" y="263.4" width="32.0" height="20.8" rx="5.0" ry="5.0" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.0"/>
+  <text x="545.0" y="275.9" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#DC2626">65s</text>
+  <circle cx="721.4" cy="354.7" r="6.2" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.6"/>
+  <rect x="705.4" y="324.3" width="32.0" height="20.8" rx="5.0" ry="5.0" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.0"/>
+  <text x="721.4" y="336.8" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#DC2626">42s</text>
+  <circle cx="897.8" cy="320.2" r="6.2" fill="#FFFFFF" stroke="#DC2626" stroke-width="2.6"/>
+  <rect x="881.8" y="289.9" width="32.0" height="20.8" rx="5.0" ry="5.0" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.0"/>
+  <text x="897.8" y="302.4" text-anchor="middle" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#DC2626">55s</text>
+</svg>

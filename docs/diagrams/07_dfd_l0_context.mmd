@@ -1,0 +1,9 @@
+flowchart LR
+    Dev["Developer / Student"]
+    System(("0.0 Lightweight OWASP Top 10 Scanner System"))
+    Target["Authorized Target Web App / Testbench"]
+
+    Dev -->|"Project Target URL, Ownership Ack, Scan Profile, Auth & Triage Decisions"| System
+    System -->|"Live SSE Progress, Ranked Findings, Code Fixes & JSON/HTML Reports"| Dev
+    System -->|"Scoped, Rate-Limited HTTP/HTTPS Crawl & Safe OWASP Probes"| Target
+    Target -->|"HTTP Status Codes, Response Headers, Cookies & HTML Bodies"| System

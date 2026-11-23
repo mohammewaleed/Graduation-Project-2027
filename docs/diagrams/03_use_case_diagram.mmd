@@ -1,0 +1,37 @@
+flowchart LR
+    DEV{{"Actor: Student / Web Developer"}}
+    INST{{"Actor: Team Lead / Capstone Instructor"}}
+
+    subgraph SYS["Lightweight OWASP Top 10 Vulnerability Scanner"]
+        direction TB
+        UC01(["UC-01: Create & Authorize Project"])
+        UC02(["UC-02: Launch & Monitor Live Scan"])
+        UC03(["UC-03: Cancel Running Scan"])
+        UC04(["UC-04: Inspect Finding & Apply Code Fix"])
+        UC05(["UC-05: Triage & Compare Scans"])
+        UC06(["UC-06: Export Developer Report"])
+
+        UC_GUARD(["Validate Allow-List & Scope Guardrail"])
+        UC_SSE(["Stream Live Progress via SSE"])
+        UC_AUTH(["Configure Optional Auth Session"])
+        UC_KB(["Retrieve Multi-Stack Remediation Guidance"])
+    end
+
+    DEV --> UC01
+    DEV --> UC02
+    DEV --> UC03
+    DEV --> UC04
+    DEV --> UC05
+    DEV --> UC06
+
+    INST --> UC04
+    INST --> UC05
+    INST --> UC06
+
+    UC01 -. "«include»" .-> UC_GUARD
+    UC02 -. "«include»" .-> UC_GUARD
+    UC02 -. "«include»" .-> UC_SSE
+    UC04 -. "«include»" .-> UC_KB
+
+    UC_AUTH -. "«extend»" .-> UC02
+    UC03 -. "«extend»" .-> UC02

@@ -1,0 +1,30 @@
+flowchart TB
+    subgraph ClientTier["Developer Browser Tier"]
+        WebUI["Developer Dashboard UI (HTML5, Tailwind CSS, Modular Vanilla JS, Chart.js - 6 Views)"]
+    end
+
+    subgraph AppTier["Scanner Application Container (Python 3.12 + Uvicorn :8000)"]
+        FastAPI["FastAPI REST & SSE Server (Pydantic v2, pydantic-settings, Security Headers MW)"]
+        Worker["In-Process Scan Worker (Bounded ThreadPoolExecutor + threading.Event Cancel Registry)"]
+        Engine["Pure Decoupled Scanner Engine (backend/scanner - Requests, BS4/lxml, 17 OWASP Checks)"]
+        RemKB["Multi-Stack Remediation KB (backend/scanner/remediation/kb.json)"]
+        Reporter["Report Exporter (Jinja2 Standalone HTML & Structured JSON)"]
+    end
+
+    subgraph DataTier["Persistence Layer (SQLAlchemy 2.0 ORM)"]
+        SQLite[("SQLite Default Database (data/scanner.db - WAL Mode)")]
+        Postgres[("Optional PostgreSQL 16 (--profile postgres via DATABASE_URL)")]
+    end
+
+    Target["Authorized Target Web App (localhost / host.docker.internal / Testbench)"]
+
+    WebUI -->|"REST JSON (/api/*) & Live SSE (/api/scans/{id}/stream)"| FastAPI
+    FastAPI -->|"Submits scan jobs & signals cancel_event"| Worker
+    FastAPI -->|"Generates downloadable reports"| Reporter
+    Worker -->|"Invokes ScanOrchestrator & receives progress events"| Engine
+    Engine -->|"Loads plain-language root causes & Before/After fixes"| RemKB
+    FastAPI -->|"CRUD Projects, Scans, Findings & Triage"| SQLite
+    Worker -->|"Persists Endpoints, Enriched Findings & Risk Score"| SQLite
+    FastAPI -.->|"Optional drop-in dialect via DATABASE_URL"| Postgres
+    Worker -.->|"Optional drop-in dialect via DATABASE_URL"| Postgres
+    Engine -->|"Allow-listed, rate-limited HTTP/HTTPS requests"| Target

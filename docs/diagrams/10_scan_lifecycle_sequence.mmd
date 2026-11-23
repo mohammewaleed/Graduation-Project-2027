@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    participant Dev as Developer Browser
+    participant API as FastAPI Server
+    participant DB as SQLAlchemy DB
+    participant Pool as ThreadPoolExecutor
+    participant Orch as ScanOrchestrator
+    participant Target as Authorized Target App
+    participant KB as Remediation KB
+
+    Dev->>API: POST /api/projects/{id}/scans (profile, auth, ownership_confirmed)
+    API->>API: Validate Pydantic v2 schema and ScopeGuardrail allow-list
+    API->>DB: INSERT scans (status=queued, config_snapshot)
+    API->>Pool: Submit run_scan(scan_id, cancel_event)
+    API-->>Dev: 202 Accepted (scan_id, status=queued)
+
+    Dev->>API: GET /api/scans/{id}/stream (EventSource SSE)
+    Pool->>Orch: Start execution in worker thread
+    Orch->>DB: UPDATE scans SET status=crawling, started_at=now
+    Orch-->>API: Emit SSE phase_change (crawling)
+    API-->>Dev: SSE data phase=crawling, progress=5%
+
+    Orch->>Target: GET random non-existent path (Soft-404 calibration)
+    Target-->>Orch: 404 or Soft-404 baseline signature
+
+    loop BFS Crawl within depth, page and request caps
+        Orch->>Target: Scoped rate-limited GET (respecting denylist)
+        Target-->>Orch: HTML body, headers, cookies, status
+        Orch->>Orch: Parse links, forms and params via BeautifulSoup4 + lxml
+    end
+
+    Orch->>DB: Bulk INSERT endpoints
+    Orch->>DB: UPDATE scans SET status=scanning, endpoints_found=N
+    Orch-->>API: Emit SSE phase_change (scanning)
+    API-->>Dev: SSE data phase=scanning, endpoints_found=N
+
+    loop For each profile-selected Check in CheckRegistry
+        Orch->>Target: Execute passive analysis or safe active probe
+        Target-->>Orch: HTTP response and timing
+        Orch->>Orch: Deduplicate RawFinding via SHA-1 fingerprint
+        Orch->>KB: Lookup plain explanation and multi-stack Before/After fix
+        KB-->>Orch: EnrichedFinding payload
+        Orch->>DB: INSERT findings
+        Orch-->>API: Emit SSE finding_discovered and progress
+        API-->>Dev: SSE data finding summary and progress_pct
+    end
+
+    Orch->>Orch: Compute risk_score (0-100) excluding false_positive
+    Orch->>DB: UPDATE scans SET status=completed, risk_score, finished_at
+    Orch-->>API: Emit SSE scan_completed
+    API-->>Dev: SSE data status=completed, risk_score
+    Dev->>API: GET /api/scans/{id}/findings
+    API->>DB: SELECT findings JOIN endpoints
+    API-->>Dev: 200 OK (Ranked findings + code fixes)

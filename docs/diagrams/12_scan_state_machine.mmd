@@ -1,0 +1,24 @@
+stateDiagram-v2
+    [*] --> queued : POST /api/projects/{id}/scans (202 Accepted)
+
+    queued --> crawling : Worker acquires ThreadPoolExecutor slot
+    queued --> cancelled : User calls POST /api/scans/{id}/cancel before start
+    queued --> failed : Pre-flight guardrail failure or unreachable target
+
+    crawling --> scanning : Soft-404 calibrated & BFS endpoints persisted
+    crawling --> cancelled : cancel_event.is_set() during crawl loop
+    crawling --> failed : Fatal network loss or database write failure
+
+    scanning --> completed : All selected checks finished & risk_score saved
+    scanning --> cancelled : cancel_event.is_set() between checks or requests
+    scanning --> failed : Unhandled orchestrator runtime error
+
+    completed --> [*]
+    cancelled --> [*]
+    failed --> [*]
+
+    note right of scanning
+        Per-check exceptions are isolated inside
+        try/except and emit check_warning events
+        without transitioning the scan to failed.
+    end note

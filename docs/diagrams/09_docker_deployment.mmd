@@ -1,0 +1,27 @@
+flowchart TB
+    subgraph Host["Developer Workstation (Windows / macOS / Linux)"]
+        Browser["Developer Browser (http://localhost:8000)"]
+        LocalApp["Developer Local Web App (e.g., localhost:5000 or :8081)"]
+
+        subgraph CoreCompose["docker-compose.yml (Network: scanner_net)"]
+            ScannerApp["scanner Container (Python 3.12-slim, Non-Root User, Uvicorn :8000)"]
+            DataVol[("Named Volume: scanner_data (/app/data/scanner.db)")]
+            PgDB["postgres Container - Optional --profile postgres (PostgreSQL 16 :5432)"]
+            PgVol[("Named Volume: postgres_data")]
+        end
+
+        subgraph BenchCompose["docker-compose.testbench.yml (Network: testbench_net)"]
+            DVWA["dvwa Container (vulnerables/web-dvwa - 127.0.0.1:8080:80)"]
+            JuiceShop["juice-shop Container (bkimminich/juice-shop - 127.0.0.1:3000:3000)"]
+            VulnBench["vulnbench Container (Local Flask+SQLite - 127.0.0.1:5050:5050)"]
+        end
+    end
+
+    Browser -->|"HTTP / SSE (127.0.0.1:8000)"| ScannerApp
+    ScannerApp -->|"SQLite WAL Default"| DataVol
+    ScannerApp -.->|"Optional DATABASE_URL (--profile postgres)"| PgDB
+    PgDB -.-> PgVol
+    ScannerApp -->|"extra_hosts: host.docker.internal:host-gateway"| LocalApp
+    ScannerApp -->|"Internal Docker DNS (http://dvwa)"| DVWA
+    ScannerApp -->|"Internal Docker DNS (http://juice-shop:3000)"| JuiceShop
+    ScannerApp -->|"Internal Docker DNS (http://vulnbench:5050)"| VulnBench
