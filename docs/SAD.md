@@ -101,6 +101,7 @@ All publication editions are generated reproducibly from the modular Markdown ch
 | **Microsoft Word Book** | [SAD_Book.docx](SAD_Book.docx) | Native OOXML `.docx` with Cover Page, TOC, List of Figures, 19 embedded PNGs, headers/footers, and academic styles | `python scripts/build_sad_docx.py` |
 | **Formal PDF Book** | [SAD_Book.pdf](SAD_Book.pdf) | Print-ready A4 PDF book with embedded offline figures for supervisor and committee submission | `python scripts/build_sad_pdf.py` |
 | **Offline Printable HTML** | [SAD_Printable.html](SAD_Printable.html) | Self-contained offline HTML5 edition with inline base64 PNG figures, clickable TOC/List of Figures, and A4 `@media print` CSS | `python scripts/build_sad_html.py` |
+| **Semester 1 Defense Presentation** | [PPTX](presentations/Semester1_Progress_Defense.pptx) · [PDF](presentations/Semester1_Progress_Defense.pdf) · [HTML](presentations/Semester1_Progress_Defense.html) | 12-slide 16:9 widescreen Semester 1 Progress & Architecture Defense deck (Chapters 1–3, 7 embedded figures, 100% offline) | `py -3.12 scripts/build_presentation.py` |
 
 ### Semester Split Editions
 
@@ -121,6 +122,7 @@ python scripts/build_sad_html.py
 python scripts/build_sad_docx.py
 python scripts/build_sad_pdf.py
 py -3.12 scripts/build_semester_editions.py
+py -3.12 scripts/build_presentation.py
 ```
 
 ---
