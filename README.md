@@ -21,6 +21,8 @@ A fast, zero-config local web vulnerability scanner built for developers and stu
 
 ### Option 1: Native Python (`3.12+`)
 
+**Prerequisites:** Git · Python `3.12+` (`3.11+` supported) · `pip`
+
 ```powershell
 # 1. Clone & create virtual environment
 git clone https://github.com/mohammewaleed/Graduation-Project-2027.git
@@ -41,6 +43,8 @@ python testbench/vulnbench/app.py --host 127.0.0.1 --port 5050
 ```
 
 ### Option 2: Docker Compose
+
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (with Docker Compose v2; on Windows, **WSL 2** enabled) · Free ports `8000` (and `5050`/`8080`/`3000` if running testbench). *No local Python installation required.*
 
 ```bash
 # Scanner only (SQLite WAL persistence)
