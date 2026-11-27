@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     env: str = "development"
     app_name: str = "OWASP Top 10 Developer-Experience Vulnerability Scanner"
-    app_version: str = "0.1.0"
+    app_version: str = "1.0.0"
     app_port: int = 8000
     database_url: str = "sqlite:///./data/scanner.db"
     scan_allowlist: str = (

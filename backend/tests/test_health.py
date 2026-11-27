@@ -8,6 +8,7 @@ REQUIRED_SECURITY_HEADERS = (
     "X-Content-Type-Options",
     "X-Frame-Options",
     "Referrer-Policy",
+    "Permissions-Policy",
     "Content-Security-Policy",
 )
 
@@ -20,7 +21,7 @@ def test_health_endpoint_returns_ok_and_db_up() -> None:
     assert response.status_code == 200
     payload = response.json()
     assert payload["status"] == "ok"
-    assert payload["version"] == "0.1.0"
+    assert payload["version"] == "1.0.0"
     assert payload["database"]["status"] == "up"
     assert payload["database"]["dialect"] in {"sqlite", "postgresql"}
 

@@ -1,0 +1,750 @@
+{
+  "missing_security_headers": {
+    "check_id": "missing_security_headers",
+    "title": "Missing HTTP Security Response Headers",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-693",
+    "summary": "Add standard browser defense-in-depth HTTP headers (Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, and Permissions-Policy) globally via response middleware or reverse proxy configuration.",
+    "root_cause_template": "The response from {method} {path} ({parameter}) omits one or more recommended HTTP security headers. Without these browser-enforced guardrails, the application is more exposed to clickjacking, MIME-type sniffing, referrer leakage, and script injection.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef home():\n    return {\"status\": \"ok\"}",
+        "after": "from fastapi import FastAPI, Request\n\napp = FastAPI()\n\n@app.middleware(\"http\")\nasync def add_security_headers(request: Request, call_next):\n    response = await call_next(request)\n    response.headers[\"X-Content-Type-Options\"] = \"nosniff\"\n    response.headers[\"X-Frame-Options\"] = \"DENY\"\n    response.headers[\"Referrer-Policy\"] = \"strict-origin-when-cross-origin\"\n    response.headers[\"Permissions-Policy\"] = \"geolocation=(), microphone=(), camera=()\"\n    response.headers[\"Content-Security-Policy\"] = \"default-src 'self'; frame-ancestors 'none'; object-src 'none'\"\n    return response"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route(\"/\")\ndef home():\n    return \"<h1>Home</h1>\"",
+        "after": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.after_request\ndef set_security_headers(response):\n    response.headers[\"X-Content-Type-Options\"] = \"nosniff\"\n    response.headers[\"X-Frame-Options\"] = \"DENY\"\n    response.headers[\"Referrer-Policy\"] = \"strict-origin-when-cross-origin\"\n    response.headers[\"Permissions-Policy\"] = \"geolocation=(), microphone=(), camera=()\"\n    response.headers[\"Content-Security-Policy\"] = \"default-src 'self'; frame-ancestors 'none'; object-src 'none'\"\n    return response"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const express = require(\"express\");\nconst app = express();\n\napp.get(\"/\", (req, res) => {\n  res.send(\"<h1>Home</h1>\");\n});",
+        "after": "const express = require(\"express\");\nconst helmet = require(\"helmet\");\nconst app = express();\n\napp.use(helmet({\n  frameguard: { action: \"deny\" },\n  referrerPolicy: { policy: \"strict-origin-when-cross-origin\" },\n  contentSecurityPolicy: {\n    directives: {\n      defaultSrc: [\"'self'\"],\n      objectSrc: [\"'none'\"],\n      frameAncestors: [\"'none'\"]\n    }\n  }\n}));\napp.use((req, res, next) => {\n  res.setHeader(\"Permissions-Policy\", \"geolocation=(), microphone=(), camera=()\");\n  next();\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n// No security headers sent before output\necho \"<h1>Home</h1>\";",
+        "after": "<?php\nheader(\"X-Content-Type-Options: nosniff\");\nheader(\"X-Frame-Options: DENY\");\nheader(\"Referrer-Policy: strict-origin-when-cross-origin\");\nheader(\"Permissions-Policy: geolocation=(), microphone=(), camera=()\");\nheader(\"Content-Security-Policy: default-src 'self'; frame-ancestors 'none'; object-src 'none'\");\necho \"<h1>Home</h1>\";"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!doctype html>\n<html>\n  <head><title>App</title></head>\n  <body><h1>Home</h1></body>\n</html>",
+        "after": "<!doctype html>\n<html>\n  <head>\n    <title>App</title>\n    <!-- Set headers on the server/proxy; meta tags provide defense-in-depth for referrer & CSP -->\n    <meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n    <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; object-src 'none'\">\n  </head>\n  <body><h1>Home</h1></body>\n</html>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html"
+    ]
+  },
+  "weak_csp": {
+    "check_id": "weak_csp",
+    "title": "Weak or Permissive Content-Security-Policy (CSP)",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-693",
+    "summary": "Tighten the Content-Security-Policy header by removing 'unsafe-inline', 'unsafe-eval', and wildcard '*' sources from script-src/default-src, and explicitly restricting default-src, object-src, and base-uri.",
+    "root_cause_template": "The Content-Security-Policy returned on {method} {path} ({parameter}) uses overly permissive directives (such as 'unsafe-inline', 'unsafe-eval', '*', or missing default-src/object-src), weakening its ability to block Cross-Site Scripting (XSS) payloads.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "response.headers[\"Content-Security-Policy\"] = \"default-src * 'unsafe-inline' 'unsafe-eval'\"",
+        "after": "import secrets\n\nnonce = secrets.token_urlsafe(16)\nresponse.headers[\"Content-Security-Policy\"] = (\n    f\"default-src 'self'; script-src 'self' 'nonce-{nonce}'; \"\n    \"style-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'\"\n)"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.after_request\ndef add_csp(response):\n    response.headers[\"Content-Security-Policy\"] = \"script-src * 'unsafe-inline'\"\n    return response",
+        "after": "import secrets\nfrom flask import g\n\n@app.before_request\ndef generate_nonce():\n    g.csp_nonce = secrets.token_urlsafe(16)\n\n@app.after_request\ndef add_csp(response):\n    response.headers[\"Content-Security-Policy\"] = (\n        f\"default-src 'self'; script-src 'self' 'nonce-{g.csp_nonce}'; \"\n        \"object-src 'none'; base-uri 'self'; frame-ancestors 'none'\"\n    )\n    return response"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.use((req, res, next) => {\n  res.setHeader(\"Content-Security-Policy\", \"default-src * 'unsafe-inline' 'unsafe-eval'\");\n  next();\n});",
+        "after": "const crypto = require(\"crypto\");\n\napp.use((req, res, next) => {\n  const nonce = crypto.randomBytes(16).toString(\"base64\");\n  res.locals.cspNonce = nonce;\n  res.setHeader(\n    \"Content-Security-Policy\",\n    `default-src 'self'; script-src 'self' 'nonce-${nonce}'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'`\n  );\n  next();\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\nheader(\"Content-Security-Policy: default-src * 'unsafe-inline' 'unsafe-eval'\");",
+        "after": "<?php\n$nonce = base64_encode(random_bytes(16));\nheader(\n    \"Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{$nonce}'; \" .\n    \"object-src 'none'; base-uri 'self'; frame-ancestors 'none'\"\n);"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<button onclick=\"submitOrder()\">Order</button>\n<script>console.log('inline without nonce');</script>",
+        "after": "<!-- Move inline handlers to external scripts or attach a per-request CSP nonce -->\n<button id=\"order-btn\" type=\"button\">Order</button>\n<script src=\"/static/js/order.js\" defer></script>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+    ]
+  },
+  "server_banner_leak": {
+    "check_id": "server_banner_leak",
+    "title": "Server Technology and Version Banner Disclosure",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-200",
+    "summary": "Suppress or strip version-disclosing Server and X-Powered-By HTTP response headers so attackers cannot trivially fingerprint exact framework or runtime versions.",
+    "root_cause_template": "The HTTP response for {method} {path} ({parameter}) exposes exact server or framework version details in response headers, aiding automated reconnaissance for version-specific CVEs.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "# Uvicorn sends 'Server: uvicorn' by default\nuvicorn.run(\"app:app\", host=\"127.0.0.1\", port=8000)",
+        "after": "# Disable the Server header in Uvicorn and strip X-Powered-By in middleware\n@app.middleware(\"http\")\nasync def strip_banners(request: Request, call_next):\n    response = await call_next(request)\n    if \"x-powered-by\" in response.headers:\n        del response.headers[\"x-powered-by\"]\n    return response\n\n# Run with: uvicorn app:app --no-server-header"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "# Werkzeug/Flask exposes 'Server: Werkzeug/3.x Python/3.x'\napp.run(host=\"127.0.0.1\", port=5000)",
+        "after": "@app.after_request\ndef remove_version_headers(response):\n    response.headers.pop(\"X-Powered-By\", None)\n    response.headers[\"Server\"] = \"webserver\"\n    return response\n# In production, serve behind Gunicorn/Nginx with 'server_tokens off;'"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const express = require(\"express\");\nconst app = express();\n// Express sends 'X-Powered-By: Express' by default",
+        "after": "const express = require(\"express\");\nconst app = express();\n\napp.disable(\"x-powered-by\");\napp.use((req, res, next) => {\n  res.removeHeader(\"Server\");\n  next();\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "; php.ini\nexpose_php = On",
+        "after": "; php.ini — hide X-Powered-By: PHP/x.y.z\nexpose_php = Off\n\n<?php\n// Also strip in application bootstrap if needed\nheader_remove(\"X-Powered-By\");"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<meta name=\"generator\" content=\"WordPress 5.8.1\">",
+        "after": "<!-- Remove CMS/framework version generator meta tags from HTML templates -->\n<meta charset=\"utf-8\">"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html"
+    ]
+  },
+  "verbose_error_pages": {
+    "check_id": "verbose_error_pages",
+    "title": "Verbose Error Pages and Stack Trace Disclosure",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-209",
+    "summary": "Disable debug error pages in deployed environments and register a global exception handler that logs detailed stack traces server-side while returning a generic error message to clients.",
+    "root_cause_template": "The endpoint {method} {path} ({parameter}) returned raw internal exception details or framework stack traces in the HTTP body, leaking source file paths, library versions, or query structures.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "app = FastAPI(debug=True)\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    return lookup_item(item_id)",
+        "after": "import logging\nfrom fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\nlogger = logging.getLogger(__name__)\napp = FastAPI(debug=False)\n\n@app.exception_handler(Exception)\nasync def unhandled_exception_handler(request: Request, exc: Exception):\n    logger.exception(\"Unhandled error on %s\", request.url.path)\n    return JSONResponse(status_code=500, content={\"error\": \"Internal server error\"})"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "app = Flask(__name__)\napp.run(debug=True)",
+        "after": "import logging\nfrom flask import Flask, jsonify\n\napp = Flask(__name__)\napp.config[\"DEBUG\"] = False\napp.config[\"PROPAGATE_EXCEPTIONS\"] = False\n\n@app.errorhandler(500)\ndef handle_internal_error(err):\n    app.logger.exception(\"Internal server error: %s\", err)\n    return jsonify({\"error\": \"An unexpected error occurred.\"}), 500"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.use((err, req, res, next) => {\n  res.status(500).send(err.stack);\n});",
+        "after": "app.use((err, req, res, next) => {\n  console.error(\"Unhandled error:\", err);\n  res.status(500).json({ error: \"Internal server error\" });\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\nini_set(\"display_errors\", \"1\");\nerror_reporting(E_ALL);",
+        "after": "<?php\nini_set(\"display_errors\", \"0\");\nini_set(\"log_errors\", \"1\");\nset_exception_handler(function (Throwable $e): void {\n    error_log($e->getMessage() . \"\\n\" . $e->getTraceAsString());\n    http_response_code(500);\n    echo \"An unexpected error occurred.\";\n});"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!-- Exposed debug template -->\n<pre>{{ exception.traceback }}</pre>",
+        "after": "<!-- Generic user-facing 500 error page without internal paths or stack traces -->\n<main role=\"alert\">\n  <h1>Something went wrong</h1>\n  <p>Please try again later or contact support with your request reference ID.</p>\n</main>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html"
+    ]
+  },
+  "insecure_cookies": {
+    "check_id": "insecure_cookies",
+    "title": "Session Cookie Missing Security Attributes",
+    "owasp_category": "A07:2021 - Identification and Authentication Failures",
+    "cwe_id": "CWE-614",
+    "summary": "Set HttpOnly, SameSite=Lax (or Strict), and Secure (over HTTPS) flags on all authentication and session cookies so scripts and cross-site requests cannot steal or misuse session identifiers.",
+    "root_cause_template": "A session-related cookie issued by {method} {path} ({parameter}) lacks one or more protective flags (HttpOnly, SameSite, or Secure), increasing the risk of session hijacking via XSS, network sniffing, or CSRF.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "response.set_cookie(key=\"session_id\", value=token)",
+        "after": "response.set_cookie(\n    key=\"session_id\",\n    value=token,\n    httponly=True,\n    secure=True,\n    samesite=\"lax\",\n    path=\"/\",\n)"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "app = Flask(__name__)\n# Defaults allow JS access or missing SameSite in older configs",
+        "after": "app = Flask(__name__)\napp.config.update(\n    SESSION_COOKIE_HTTPONLY=True,\n    SESSION_COOKIE_SECURE=True,\n    SESSION_COOKIE_SAMESITE=\"Lax\",\n)"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "res.cookie(\"session_id\", token);",
+        "after": "res.cookie(\"session_id\", token, {\n  httpOnly: true,\n  secure: process.env.NODE_ENV === \"production\",\n  sameSite: \"lax\",\n  path: \"/\"\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\nsetcookie(\"PHPSESSID\", $token);",
+        "after": "<?php\nsession_set_cookie_params([\n    \"httponly\" => true,\n    \"secure\" => true,\n    \"samesite\" => \"Lax\",\n    \"path\" => \"/\",\n]);\nsession_start();"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<script>\n  // Never store session tokens in document.cookie from client JS\n  document.cookie = \"session_id=\" + token;\n</script>",
+        "after": "<!-- Issue session cookies exclusively from the backend with HttpOnly, Secure, and SameSite=Lax -->\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+    ]
+  },
+  "insecure_transport": {
+    "check_id": "insecure_transport",
+    "title": "Insecure Transport (Cleartext Credentials or Missing HSTS)",
+    "owasp_category": "A02:2021 - Cryptographic Failures",
+    "cwe_id": "CWE-319",
+    "summary": "Enforce HTTPS with a 301 redirect from HTTP and emit a Strict-Transport-Security (HSTS) header so credentials and session tokens are never transmitted in cleartext.",
+    "root_cause_template": "The endpoint {method} {path} ({parameter}) either submits sensitive password inputs over unencrypted HTTP or serves HTTPS traffic without a Strict-Transport-Security header, leaving users vulnerable to eavesdropping or SSL stripping.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "app = FastAPI()\n# Served over plain HTTP without HSTS or redirect",
+        "after": "from fastapi import FastAPI, Request\nfrom starlette.middleware.httpsredirect import HTTPSRedirectMiddleware\n\napp = FastAPI()\napp.add_middleware(HTTPSRedirectMiddleware)\n\n@app.middleware(\"http\")\nasync def add_hsts(request: Request, call_next):\n    response = await call_next(request)\n    if request.url.scheme == \"https\":\n        response.headers[\"Strict-Transport-Security\"] = \"max-age=31536000; includeSubDomains\"\n    return response"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.route(\"/login\", methods=[\"POST\"])\ndef login():\n    return authenticate()",
+        "after": "from flask import Flask, redirect, request\n\n@app.before_request\ndef enforce_https():\n    if not request.is_secure and not app.debug:\n        return redirect(request.url.replace(\"http://\", \"https://\", 1), code=301)\n\n@app.after_request\ndef add_hsts(response):\n    if request.is_secure:\n        response.headers[\"Strict-Transport-Security\"] = \"max-age=31536000; includeSubDomains\"\n    return response"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.post(\"/login\", loginHandler);",
+        "after": "app.set(\"trust proxy\", 1);\napp.use((req, res, next) => {\n  if (!req.secure && process.env.NODE_ENV === \"production\") {\n    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);\n  }\n  res.setHeader(\"Strict-Transport-Security\", \"max-age=31536000; includeSubDomains\");\n  next();\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n// Accepts plain HTTP login submissions\nprocess_login($_POST);",
+        "after": "<?php\nif (empty($_SERVER[\"HTTPS\"]) || $_SERVER[\"HTTPS\"] === \"off\") {\n    header(\"Location: https://\" . $_SERVER[\"HTTP_HOST\"] . $_SERVER[\"REQUEST_URI\"], true, 301);\n    exit;\n}\nheader(\"Strict-Transport-Security: max-age=31536000; includeSubDomains\");\nprocess_login($_POST);"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<form action=\"http://app.local/login\" method=\"POST\">\n  <input type=\"password\" name=\"password\">\n</form>",
+        "after": "<!-- Use relative or explicit HTTPS form actions and upgrade insecure requests -->\n<form action=\"/login\" method=\"POST\" autocomplete=\"on\">\n  <input type=\"password\" name=\"password\" autocomplete=\"current-password\" required>\n</form>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A02_2021-Cryptographic_Failures/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Security_Cheat_Sheet.html"
+    ]
+  },
+  "csrf_missing_token": {
+    "check_id": "csrf_missing_token",
+    "title": "State-Changing Form Missing Anti-CSRF Token",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "cwe_id": "CWE-352",
+    "summary": "Generate a cryptographically random per-session or per-request anti-CSRF token, embed it as a hidden field in every state-changing HTML form, and validate it in constant time on the server.",
+    "root_cause_template": "The state-changing HTML form submitted to {method} {path} ({parameter}) does not include an anti-CSRF token field. A malicious website could trick an authenticated user's browser into submitting forged requests on their behalf.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "@app.post(\"/profile/update\")\nasync def update_profile(email: str = Form(...)):\n    save_email(email)",
+        "after": "import hmac\nfrom fastapi import Form, HTTPException, Request\n\n@app.post(\"/profile/update\")\nasync def update_profile(\n    request: Request,\n    email: str = Form(...),\n    csrf_token: str = Form(...),\n):\n    expected = request.cookies.get(\"csrf_token\", \"\")\n    if not expected or not hmac.compare_digest(csrf_token, expected):\n        raise HTTPException(status_code=403, detail=\"Invalid CSRF token\")\n    save_email(email)"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "from flask import Flask, request\n\napp = Flask(__name__)\n@app.post(\"/profile/update\")\ndef update_profile():\n    save_email(request.form[\"email\"])",
+        "after": "from flask import Flask, request\nfrom flask_wtf.csrf import CSRFProtect\n\napp = Flask(__name__)\napp.config[\"SECRET_KEY\"] = \"replace-with-env-secret\"\ncsrf = CSRFProtect(app)\n\n@app.post(\"/profile/update\")\ndef update_profile():\n    save_email(request.form[\"email\"])"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.post(\"/profile/update\", (req, res) => {\n  saveEmail(req.body.email);\n  res.redirect(\"/profile\");\n});",
+        "after": "const crypto = require(\"crypto\");\n\nfunction verifyCsrf(req, res, next) {\n  const expected = req.session?.csrfToken || \"\";\n  const received = req.body?.csrf_token || \"\";\n  if (!expected || expected.length !== received.length ||\n      !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received))) {\n    return res.status(403).send(\"Invalid CSRF token\");\n  }\n  next();\n}\n\napp.post(\"/profile/update\", verifyCsrf, (req, res) => {\n  saveEmail(req.body.email);\n  res.redirect(\"/profile\");\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n// Directly processes POST without CSRF check\nupdate_email($_POST[\"email\"]);",
+        "after": "<?php\nsession_start();\nif (empty($_POST[\"csrf_token\"]) || !hash_equals($_SESSION[\"csrf_token\"] ?? \"\", $_POST[\"csrf_token\"])) {\n    http_response_code(403);\n    exit(\"Invalid CSRF token\");\n}\nupdate_email($_POST[\"email\"]);"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<form action=\"/profile/update\" method=\"POST\">\n  <input type=\"email\" name=\"email\">\n  <button type=\"submit\">Save</button>\n</form>",
+        "after": "<form action=\"/profile/update\" method=\"POST\">\n  <input type=\"hidden\" name=\"csrf_token\" value=\"{{ csrf_token }}\">\n  <input type=\"email\" name=\"email\" required>\n  <button type=\"submit\">Save</button>\n</form>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "outdated_js_components": {
+    "check_id": "outdated_js_components",
+    "title": "Outdated Client-Side JavaScript Library with Known Vulnerabilities",
+    "owasp_category": "A06:2021 - Vulnerable and Outdated Components",
+    "cwe_id": "CWE-1104",
+    "summary": "Upgrade the affected client-side JavaScript library to a patched release, pin versions via a lockfile, and add Subresource Integrity (SRI) hashes for externally hosted bundles.",
+    "root_cause_template": "The page or asset loaded from {method} {path} ({parameter}) references an outdated JavaScript library version with publicly disclosed CVEs (such as DOM XSS or prototype pollution).",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "# Serving an outdated vendored library from static/\n# static/js/jquery-1.12.4.min.js",
+        "after": "# Replace vendored static/js/jquery-1.12.4.min.js with jquery-3.7.1.min.js\n# and mount static assets with explicit versioned filenames\nfrom fastapi.staticfiles import StaticFiles\n\napp.mount(\"/static\", StaticFiles(directory=\"static\"), name=\"static\")"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "<!-- templates/base.html -->\n<script src=\"{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}\"></script>",
+        "after": "<!-- templates/base.html — upgrade to a patched version -->\n<script src=\"{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}\" defer></script>"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "// package.json\n\"dependencies\": {\n  \"lodash\": \"4.17.15\",\n  \"jquery\": \"3.4.1\"\n}",
+        "after": "// package.json — update to patched versions and run `npm audit`\n\"dependencies\": {\n  \"lodash\": \"^4.17.21\",\n  \"jquery\": \"^3.7.1\"\n}"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\necho '<script src=\"/assets/js/bootstrap-3.3.7.min.js\"></script>';",
+        "after": "<?php\n// Serve upgraded, patched frontend assets\necho '<script src=\"/assets/js/bootstrap-5.3.3.bundle.min.js\" defer></script>';"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<script src=\"/static/jquery-3.4.1.min.js\"></script>",
+        "after": "<script src=\"/static/jquery-3.7.1.min.js\" crossorigin=\"anonymous\" defer></script>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Javascript_Management_Cheat_Sheet.html"
+    ]
+  },
+  "cors_misconfig": {
+    "check_id": "cors_misconfig",
+    "title": "Permissive Cross-Origin Resource Sharing (CORS) Policy",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-942",
+    "summary": "Replace arbitrary Origin reflection, 'null' origins, and credentialed wildcards with an explicit allowlist of exact trusted origins.",
+    "root_cause_template": "The endpoint {method} {path} ({parameter}) echoes untrusted Origin headers or combines permissive Access-Control-Allow-Origin rules with credentials, enabling malicious sites to read authenticated API responses cross-origin.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "from fastapi.middleware.cors import CORSMiddleware\n\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=[\"*\"],\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],\n)",
+        "after": "from fastapi.middleware.cors import CORSMiddleware\n\nALLOWED_ORIGINS = [\"http://localhost:3000\", \"http://127.0.0.1:3000\"]\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=ALLOWED_ORIGINS,\n    allow_credentials=True,\n    allow_methods=[\"GET\", \"POST\", \"PATCH\", \"DELETE\"],\n    allow_headers=[\"Authorization\", \"Content-Type\"],\n)"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.after_request\ndef add_cors(response):\n    response.headers[\"Access-Control-Allow-Origin\"] = request.headers.get(\"Origin\", \"*\")\n    response.headers[\"Access-Control-Allow-Credentials\"] = \"true\"\n    return response",
+        "after": "ALLOWED_ORIGINS = {\"http://localhost:3000\", \"http://127.0.0.1:3000\"}\n\n@app.after_request\ndef add_cors(response):\n    origin = request.headers.get(\"Origin\")\n    if origin in ALLOWED_ORIGINS:\n        response.headers[\"Access-Control-Allow-Origin\"] = origin\n        response.headers[\"Access-Control-Allow-Credentials\"] = \"true\"\n        response.headers[\"Vary\"] = \"Origin\"\n    return response"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const cors = require(\"cors\");\napp.use(cors({ origin: true, credentials: true }));",
+        "after": "const cors = require(\"cors\");\nconst ALLOWED_ORIGINS = new Set([\"http://localhost:3000\", \"http://127.0.0.1:3000\"]);\n\napp.use(cors({\n  origin(origin, callback) {\n    if (!origin || ALLOWED_ORIGINS.has(origin)) return callback(null, true);\n    return callback(new Error(\"Origin not allowed by CORS\"));\n  },\n  credentials: true\n}));"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\nheader(\"Access-Control-Allow-Origin: \" . ($_SERVER[\"HTTP_ORIGIN\"] ?? \"*\"));\nheader(\"Access-Control-Allow-Credentials: true\");",
+        "after": "<?php\n$allowedOrigins = [\"http://localhost:3000\", \"http://127.0.0.1:3000\"];\n$origin = $_SERVER[\"HTTP_ORIGIN\"] ?? \"\";\nif (in_array($origin, $allowedOrigins, true)) {\n    header(\"Access-Control-Allow-Origin: \" . $origin);\n    header(\"Access-Control-Allow-Credentials: true\");\n    header(\"Vary: Origin\");\n}"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<script>\nfetch(\"http://localhost:8000/api/me\", { credentials: \"include\" });\n</script>",
+        "after": "<!-- Prefer same-origin API routes or configure an exact Origin allowlist on the backend -->\n<script>\nfetch(\"/api/me\", { credentials: \"same-origin\" });\n</script>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/HTML5_Security_Cheat_Sheet.html#cross-origin-resource-sharing"
+    ]
+  },
+  "sqli_error_based": {
+    "check_id": "sqli_error_based",
+    "title": "Error-Based SQL Injection",
+    "owasp_category": "A03:2021 - Injection",
+    "cwe_id": "CWE-89",
+    "summary": "Replace string-concatenated SQL with parameterized queries (bound placeholders) or ORM query builders so untrusted input is always treated strictly as data, never as executable SQL syntax.",
+    "root_cause_template": "Untrusted user input sent via {method} {path} (parameter: {parameter}) is concatenated directly into a SQL statement, causing database syntax errors when quote characters are supplied and exposing the database to arbitrary query manipulation.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "from sqlalchemy import text\n\nquery = text(f\"SELECT * FROM users WHERE username = '{user}'\")\nrow = db.execute(query).fetchone()",
+        "after": "from sqlalchemy import select\n\nstmt = select(User).where(User.username == user)\nrow = db.execute(stmt).scalar_one_or_none()"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "cursor.execute(\n    f\"SELECT id, username FROM users WHERE username = '{request.form['user']}'\"\n)",
+        "after": "cursor.execute(\n    \"SELECT id, username FROM users WHERE username = ?\",\n    (request.form[\"user\"],),\n)"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const sql = `SELECT id, username FROM users WHERE username = '${req.body.user}'`;\nconst result = await db.query(sql);",
+        "after": "const sql = \"SELECT id, username FROM users WHERE username = $1\";\nconst result = await db.query(sql, [req.body.user]);"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n$stmt = $pdo->query(\"SELECT id, username FROM users WHERE username = '\" . $_POST['user'] . \"'\");",
+        "after": "<?php\n$stmt = $pdo->prepare(\"SELECT id, username FROM users WHERE username = :user\");\n$stmt->execute([\"user\" => $_POST[\"user\"]]);"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<input type=\"text\" name=\"user\">",
+        "after": "<!-- Always use parameterized SQL on the server; add HTML constraints only as UX defense-in-depth -->\n<input type=\"text\" name=\"user\" maxlength=\"64\" pattern=\"[A-Za-z0-9_.@-]+\" required>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A03_2021-Injection/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "sqli_boolean_diff": {
+    "check_id": "sqli_boolean_diff",
+    "title": "Boolean-Based Blind SQL Injection",
+    "owasp_category": "A03:2021 - Injection",
+    "cwe_id": "CWE-89",
+    "summary": "Use parameterized prepared statements or ORM bindings for every query predicate and strictly validate expected input types (such as integers or allowlisted column names).",
+    "root_cause_template": "The application changes its response behavior on {method} {path} (parameter: {parameter}) when true versus false SQL boolean expressions are injected, indicating that raw user input is evaluated inside a SQL WHERE clause.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "query = text(f\"SELECT * FROM products WHERE id = {item_id}\")\nitem = db.execute(query).fetchone()",
+        "after": "from sqlalchemy import text\n\nquery = text(\"SELECT * FROM products WHERE id = :item_id\")\nitem = db.execute(query, {\"item_id\": int(item_id)}).fetchone()"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "item_id = request.args.get(\"id\", \"\")\ncursor.execute(\"SELECT * FROM products WHERE id = \" + item_id)",
+        "after": "item_id = request.args.get(\"id\", type=int)\nif item_id is None:\n    abort(400)\ncursor.execute(\"SELECT * FROM products WHERE id = ?\", (item_id,))"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const sql = \"SELECT * FROM products WHERE id = \" + req.query.id;\nconst rows = await db.query(sql);",
+        "after": "const itemId = Number.parseInt(req.query.id, 10);\nif (!Number.isInteger(itemId)) return res.status(400).json({ error: \"Invalid id\" });\nconst rows = await db.query(\"SELECT * FROM products WHERE id = $1\", [itemId]);"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n$res = $pdo->query(\"SELECT * FROM products WHERE id = \" . $_GET[\"id\"]);",
+        "after": "<?php\n$id = filter_input(INPUT_GET, \"id\", FILTER_VALIDATE_INT);\nif ($id === false || $id === null) { http_response_code(400); exit; }\n$stmt = $pdo->prepare(\"SELECT * FROM products WHERE id = :id\");\n$stmt->execute([\"id\" => $id]);"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<input type=\"text\" name=\"id\">",
+        "after": "<!-- Enforce prepared statements server-side; restrict numeric inputs in HTML for UX -->\n<input type=\"number\" name=\"id\" min=\"1\" step=\"1\" required>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A03_2021-Injection/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "xss_reflected": {
+    "check_id": "xss_reflected",
+    "title": "Reflected Cross-Site Scripting (XSS)",
+    "owasp_category": "A03:2021 - Injection",
+    "cwe_id": "CWE-79",
+    "summary": "Apply context-aware output encoding (auto-escaping templates, HTML entity encoding, and safe DOM APIs like textContent) whenever rendering untrusted input, reinforced with a strict Content-Security-Policy.",
+    "root_cause_template": "User-supplied input on {method} {path} (parameter: {parameter}) is echoed back into an HTML response without proper output escaping, allowing attacker-controlled markup or scripts to execute in a victim's browser.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "from fastapi.responses import HTMLResponse\n\n@app.get(\"/search\")\ndef search(q: str = \"\"):\n    return HTMLResponse(f\"<h1>Results for {q}</h1>\")",
+        "after": "import html\nfrom fastapi.responses import HTMLResponse\n\n@app.get(\"/search\")\ndef search(q: str = \"\"):\n    safe_q = html.escape(q, quote=True)\n    return HTMLResponse(f\"<h1>Results for {safe_q}</h1>\")"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "from flask import request\n\n@app.route(\"/search\")\ndef search():\n    q = request.args.get(\"q\", \"\")\n    return f\"<h1>Results for {q}</h1>\"",
+        "after": "from flask import render_template, request\n\n@app.route(\"/search\")\ndef search():\n    q = request.args.get(\"q\", \"\")\n    # Jinja2 auto-escapes {{ q }} in .html templates\n    return render_template(\"search.html\", query=q)"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.get(\"/search\", (req, res) => {\n  res.send(`<h1>Results for ${req.query.q}</h1>`);\n});",
+        "after": "const escapeHtml = (str) =>\n  String(str).replace(/[&<>\"']/g, (c) => (\n    { \"&\": \"&amp;\", \"<\": \"&lt;\", \">\": \"&gt;\", '\"': \"&quot;\", \"'\": \"&#39;\" }[c]\n  ));\n\napp.get(\"/search\", (req, res) => {\n  res.type(\"html\").send(`<h1>Results for ${escapeHtml(req.query.q || \"\")}</h1>`);\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\necho \"<h1>Results for \" . $_GET[\"q\"] . \"</h1>\";",
+        "after": "<?php\n$safeQuery = htmlspecialchars($_GET[\"q\"] ?? \"\", ENT_QUOTES | ENT_SUBSTITUTE, \"UTF-8\");\necho \"<h1>Results for \" . $safeQuery . \"</h1>\";"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<div id=\"result\"></div>\n<script>\n  const params = new URLSearchParams(location.search);\n  document.getElementById(\"result\").innerHTML = params.get(\"q\");\n</script>",
+        "after": "<div id=\"result\"></div>\n<script>\n  const params = new URLSearchParams(location.search);\n  // Use textContent instead of innerHTML so input is never parsed as HTML\n  document.getElementById(\"result\").textContent = params.get(\"q\") || \"\";\n</script>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A03_2021-Injection/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+    ]
+  },
+  "open_redirect": {
+    "check_id": "open_redirect",
+    "title": "Unvalidated Open Redirect",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "cwe_id": "CWE-601",
+    "summary": "Restrict redirect destinations to relative local paths (single leading '/' without scheme/host) or an explicit server-side allowlist of destination identifiers.",
+    "root_cause_template": "The endpoint {method} {path} (parameter: {parameter}) forwards users to an unvalidated external URL supplied in the request, enabling phishing campaigns that abuse your application's trusted origin.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "from fastapi.responses import RedirectResponse\n\n@app.get(\"/login/redirect\")\ndef finish_login(next: str = \"/\"):\n    return RedirectResponse(url=next)",
+        "after": "from urllib.parse import urlsplit\nfrom fastapi.responses import RedirectResponse\n\ndef safe_local_redirect(target: str) -> str:\n    parsed = urlsplit(target)\n    if parsed.scheme or parsed.netloc or not target.startswith(\"/\") or target.startswith(\"//\"):\n        return \"/\"\n    return target\n\n@app.get(\"/login/redirect\")\ndef finish_login(next: str = \"/\"):\n    return RedirectResponse(url=safe_local_redirect(next))"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "from flask import redirect, request\n\n@app.route(\"/redirect\")\ndef go_next():\n    return redirect(request.args.get(\"next\", \"/\"))",
+        "after": "from urllib.parse import urlsplit\nfrom flask import redirect, request\n\n@app.route(\"/redirect\")\ndef go_next():\n    target = request.args.get(\"next\", \"/\")\n    parsed = urlsplit(target)\n    if parsed.scheme or parsed.netloc or not target.startswith(\"/\") or target.startswith(\"//\"):\n        target = \"/\"\n    return redirect(target)"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.get(\"/redirect\", (req, res) => {\n  res.redirect(req.query.next || \"/\");\n});",
+        "after": "app.get(\"/redirect\", (req, res) => {\n  const raw = String(req.query.next || \"/\");\n  const isSafeLocal = raw.startsWith(\"/\") && !raw.startsWith(\"//\") && !raw.includes(\"\\\\\");\n  res.redirect(isSafeLocal ? raw : \"/\");\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\nheader(\"Location: \" . ($_GET[\"next\"] ?? \"/\"));\nexit;",
+        "after": "<?php\n$allowedPaths = [\"/\", \"/dashboard\", \"/profile\"];\n$next = $_GET[\"next\"] ?? \"/\";\n$target = in_array($next, $allowedPaths, true) ? $next : \"/\";\nheader(\"Location: \" . $target);\nexit;"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<a href=\"/redirect?next=https://external.example\">Continue</a>",
+        "after": "<!-- Pass only allowlisted route keys or relative local paths -->\n<a href=\"/redirect?next=/dashboard\">Continue</a>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html"
+    ]
+  },
+  "sensitive_files": {
+    "check_id": "sensitive_files",
+    "title": "Exposed Sensitive Configuration, Source, or Backup File",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-538",
+    "summary": "Remove backup, environment, and diagnostic artifacts from the web root, block dotfile paths (/.env, /.git) at the web server, and immediately rotate any exposed credentials.",
+    "root_cause_template": "The sensitive artifact at {method} {path} ({parameter}) is directly downloadable over HTTP, potentially leaking environment secrets, database schemas, source history, or API internals.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "# Mounting the entire project root exposes .env and .git!\napp.mount(\"/\", StaticFiles(directory=\".\"), name=\"root\")",
+        "after": "# Mount ONLY a dedicated public static directory and disable OpenAPI docs in production if internal\napp = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)\napp.mount(\"/static\", StaticFiles(directory=\"public/static\"), name=\"static\")"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "# Serving files from the repository root exposes config files\napp = Flask(__name__, static_folder=\".\")",
+        "after": "# Keep .env, backups, and source outside static_folder\napp = Flask(__name__, static_folder=\"static\", static_url_path=\"/static\")"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "// Exposes dotfiles and project root\napp.use(express.static(__dirname, { dotfiles: \"allow\" }));",
+        "after": "const path = require(\"path\");\n// Serve only public/ and deny all dotfiles (.env, .git)\napp.use(\"/static\", express.static(path.join(__dirname, \"public\"), { dotfiles: \"deny\" }));"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "# DocumentRoot set to project root containing .env and .git/\nDocumentRoot /var/www/app",
+        "after": "# Point DocumentRoot to public/ and deny hidden/backup files in .htaccess\n# <FilesMatch \"^(\\.env|\\.git|.*\\.(bak|sql|log))$\">\n#   Require all denied\n# </FilesMatch>\n<?php\n// Store .env outside public/ and load via __DIR__ . '/../.env'"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!-- Avoid linking internal diagnostics or config files in client HTML -->\n<a href=\"/swagger.json\">API Spec</a>",
+        "after": "<!-- Publish only vetted public documentation; protect internal specs behind auth -->\n<a href=\"/docs/public-api\">Public API Guide</a>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+    ]
+  },
+  "directory_listing": {
+    "check_id": "directory_listing",
+    "title": "Web Server Directory Listing Enabled",
+    "owasp_category": "A05:2021 - Security Misconfiguration",
+    "cwe_id": "CWE-548",
+    "summary": "Disable automatic directory indexing in the web server or static file handler so visitors cannot enumerate internal assets, uploads, or backup files.",
+    "root_cause_template": "Requesting {method} {path} ({parameter}) returned an auto-generated directory index listing files on the server, exposing internal filenames and unlinked resources.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "# Custom handler listing os.listdir(directory)\n@app.get(\"/uploads/\")\ndef list_uploads():\n    return {\"files\": os.listdir(\"uploads\")}",
+        "after": "from fastapi.staticfiles import StaticFiles\n\n# Starlette StaticFiles disables directory listing by default (returns 404)\napp.mount(\"/uploads\", StaticFiles(directory=\"uploads\", html=False), name=\"uploads\")"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.route(\"/static/<path:subpath>\")\ndef browse(subpath):\n    return \"<br>\".join(os.listdir(os.path.join(\"static\", subpath)))",
+        "after": "from flask import abort, send_from_directory\n\n@app.route(\"/uploads/<path:filename>\")\ndef download_file(filename):\n    if filename.endswith(\"/\"):\n        abort(403)\n    return send_from_directory(\"uploads\", filename)"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "const serveIndex = require(\"serve-index\");\napp.use(\"/uploads\", express.static(\"uploads\"), serveIndex(\"uploads\"));",
+        "after": "// Remove serve-index; express.static does not render directory listings\napp.use(\"/uploads\", express.static(\"uploads\", { index: false, dotfiles: \"deny\" }));"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "# Apache .htaccess with directory browsing enabled\nOptions +Indexes",
+        "after": "# Apache .htaccess — disable automatic directory listings\nOptions -Indexes\n# Nginx equivalent:\n# autoindex off;"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!-- Linking directly to a browsable directory -->\n<a href=\"/uploads/\">Browse uploads</a>",
+        "after": "<!-- Link only to explicit files served by an authorized download endpoint -->\n<a href=\"/downloads/report-summary.pdf\">Download Summary</a>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html"
+    ]
+  },
+  "forced_browsing_admin": {
+    "check_id": "forced_browsing_admin",
+    "title": "Unauthenticated Access to Administrative or Privileged Endpoint",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "cwe_id": "CWE-425",
+    "summary": "Enforce server-side authentication and role-based authorization (RBAC) middleware on every administrative route, returning 401/403 by default when a valid admin session is absent.",
+    "root_cause_template": "The administrative route {method} {path} ({parameter}) returned privileged content directly without requiring authentication or administrator role verification, allowing unauthorized forced browsing.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "@app.get(\"/admin\")\ndef admin_panel():\n    return {\"users\": list_all_users()}",
+        "after": "from fastapi import Depends, HTTPException, status\n\ndef require_admin(user: User = Depends(get_current_user)) -> User:\n    if user.role != \"admin\":\n        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=\"Admin access required\")\n    return user\n\n@app.get(\"/admin\")\ndef admin_panel(admin: User = Depends(require_admin)):\n    return {\"users\": list_all_users()}"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.route(\"/admin\")\ndef admin_panel():\n    return render_template(\"admin.html\")",
+        "after": "from functools import wraps\nfrom flask import abort, session\n\ndef admin_required(fn):\n    @wraps(fn)\n    def wrapper(*args, **kwargs):\n        if session.get(\"role\") != \"admin\":\n            abort(403)\n        return fn(*args, **kwargs)\n    return wrapper\n\n@app.route(\"/admin\")\n@admin_required\ndef admin_panel():\n    return render_template(\"admin.html\")"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.get(\"/admin\", (req, res) => {\n  res.json({ users: getAllUsers() });\n});",
+        "after": "function requireAdmin(req, res, next) {\n  if (!req.user) return res.status(401).json({ error: \"Authentication required\" });\n  if (req.user.role !== \"admin\") return res.status(403).json({ error: \"Forbidden\" });\n  next();\n}\n\napp.get(\"/admin\", requireAdmin, (req, res) => {\n  res.json({ users: getAllUsers() });\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n// admin.php renders directly without role check\ninclude \"admin_dashboard.php\";",
+        "after": "<?php\nsession_start();\nif (empty($_SESSION[\"user_id\"]) || ($_SESSION[\"role\"] ?? \"\") !== \"admin\") {\n    http_response_code(403);\n    exit(\"Forbidden\");\n}\ninclude \"admin_dashboard.php\";"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!-- Hiding an admin link in CSS/HTML does NOT secure the route -->\n<a href=\"/admin\" style=\"display:none\">Admin</a>",
+        "after": "<!-- Render admin navigation only for verified admin sessions AND enforce RBAC on the backend -->\n{% if current_user and current_user.role == 'admin' %}\n  <a href=\"/admin\">Admin Console</a>\n{% endif %}"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+    ]
+  },
+  "idor_heuristic": {
+    "check_id": "idor_heuristic",
+    "title": "Potential Insecure Direct Object Reference (IDOR — Manual Verification Needed)",
+    "owasp_category": "A01:2021 - Broken Access Control",
+    "cwe_id": "CWE-639",
+    "summary": "Verify object ownership on the server for every request by scoping database queries to the authenticated user's ID (e.g., WHERE id = :id AND owner_id = :current_user_id) and prefer unguessable UUIDs.",
+    "root_cause_template": "Probing an adjacent numeric identifier on {method} {path} (parameter: {parameter}) returned another distinct HTTP 200 record. Because this heuristic cannot tell whether records are intentionally public, manually confirm that object-level ownership checks are enforced.",
+    "snippets": [
+      {
+        "stack": "fastapi",
+        "language": "python",
+        "before": "@app.get(\"/api/orders/{order_id}\")\ndef get_order(order_id: int, db: Session = Depends(get_db)):\n    return db.get(Order, order_id)",
+        "after": "@app.get(\"/api/orders/{order_id}\")\ndef get_order(\n    order_id: int,\n    user: User = Depends(get_current_user),\n    db: Session = Depends(get_db),\n):\n    order = db.execute(\n        select(Order).where(Order.id == order_id, Order.owner_id == user.id)\n    ).scalar_one_or_none()\n    if order is None:\n        raise HTTPException(status_code=404, detail=\"Order not found\")\n    return order"
+      },
+      {
+        "stack": "flask",
+        "language": "python",
+        "before": "@app.route(\"/api/orders/<int:order_id>\")\ndef get_order(order_id):\n    return Order.query.get_or_404(order_id).to_dict()",
+        "after": "@app.route(\"/api/orders/<int:order_id>\")\n@login_required\ndef get_order(order_id):\n    order = Order.query.filter_by(id=order_id, owner_id=current_user.id).first()\n    if order is None:\n        abort(404)\n    return order.to_dict()"
+      },
+      {
+        "stack": "express",
+        "language": "javascript",
+        "before": "app.get(\"/api/orders/:id\", async (req, res) => {\n  const order = await db.query(\"SELECT * FROM orders WHERE id = $1\", [req.params.id]);\n  res.json(order.rows[0]);\n});",
+        "after": "app.get(\"/api/orders/:id\", requireAuth, async (req, res) => {\n  const result = await db.query(\n    \"SELECT * FROM orders WHERE id = $1 AND owner_id = $2\",\n    [req.params.id, req.user.id]\n  );\n  if (result.rows.length === 0) return res.status(404).json({ error: \"Not found\" });\n  res.json(result.rows[0]);\n});"
+      },
+      {
+        "stack": "php",
+        "language": "php",
+        "before": "<?php\n$stmt = $pdo->prepare(\"SELECT * FROM orders WHERE id = :id\");\n$stmt->execute([\"id\" => $_GET[\"id\"]]);",
+        "after": "<?php\nsession_start();\n$stmt = $pdo->prepare(\"SELECT * FROM orders WHERE id = :id AND owner_id = :owner_id\");\n$stmt->execute([\n    \"id\" => (int) $_GET[\"id\"],\n    \"owner_id\" => (int) $_SESSION[\"user_id\"],\n]);\n$order = $stmt->fetch();\nif (!$order) { http_response_code(404); exit; }"
+      },
+      {
+        "stack": "html",
+        "language": "html",
+        "before": "<!-- Relying on hidden user_id form fields can be tampered with by clients -->\n<input type=\"hidden\" name=\"user_id\" value=\"42\">",
+        "after": "<!-- Never trust client-supplied user_id; derive the owner from the authenticated session on the server -->\n<form action=\"/api/orders\" method=\"POST\">\n  <input type=\"text\" name=\"item_sku\" required>\n</form>"
+      }
+    ],
+    "references": [
+      "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+      "https://cheatsheetseries.owasp.org/cheatsheets/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet.html"
+    ]
+  }
+}

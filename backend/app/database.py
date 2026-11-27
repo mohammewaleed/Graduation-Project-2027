@@ -6,6 +6,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from backend.app.config import settings
 
@@ -28,17 +29,25 @@ def build_engine(database_url: str | None = None) -> Engine:
     url_str = database_url or settings.database_url
     parsed_url = make_url(url_str)
     is_sqlite = parsed_url.drivername.startswith("sqlite")
+    is_sqlite_memory = is_sqlite and (
+        not parsed_url.database or parsed_url.database == ":memory:"
+    )
 
     connect_args: dict[str, object] = {}
+    engine_kwargs: dict[str, object] = {
+        "future": True,
+        "pool_pre_ping": True,
+    }
     if is_sqlite:
         _ensure_sqlite_parent_dir(url_str)
         connect_args["check_same_thread"] = False
+        if is_sqlite_memory:
+            engine_kwargs["poolclass"] = StaticPool
 
     db_engine = create_engine(
         url_str,
-        future=True,
-        pool_pre_ping=True,
         connect_args=connect_args,
+        **engine_kwargs,
     )
 
     if is_sqlite:
@@ -49,19 +58,33 @@ def build_engine(database_url: str | None = None) -> Engine:
             try:
                 cursor.execute("PRAGMA journal_mode=WAL;")
                 cursor.execute("PRAGMA foreign_keys=ON;")
+                cursor.execute("PRAGMA busy_timeout=5000;")
             finally:
                 cursor.close()
 
     return db_engine
 
 
+def create_session_factory(db_engine: Engine) -> sessionmaker[Session]:
+    """Create a SQLAlchemy 2.0 sessionmaker bound to ``db_engine``."""
+    return sessionmaker(
+        bind=db_engine,
+        autoflush=False,
+        autocommit=False,
+        expire_on_commit=False,
+    )
+
+
 engine: Engine = build_engine()
-SessionLocal = sessionmaker(
-    bind=engine,
-    autoflush=False,
-    autocommit=False,
-    expire_on_commit=False,
-)
+SessionLocal: sessionmaker[Session] = create_session_factory(engine)
+
+
+def init_db(db_engine: Engine | None = None) -> None:
+    """Register all ORM models and create missing tables on ``db_engine``."""
+    import backend.app.db_models  # noqa: F401
+
+    target_engine = db_engine or engine
+    Base.metadata.create_all(bind=target_engine)
 
 
 def get_db() -> Generator[Session, None, None]:

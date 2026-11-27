@@ -1,0 +1,163 @@
+{
+  "target_name": "VulnBench",
+  "description": "Deterministic local Python 3.12 benchmark application seeding all 17 OWASP check rules plus 4 clean safe control routes.",
+  "default_url": "http://127.0.0.1:5050",
+  "known_endpoints": [
+    "/",
+    "/api/profile",
+    "/weak-csp",
+    "/debug-error",
+    "/login",
+    "/items",
+    "/catalog",
+    "/search",
+    "/redirect",
+    "/users",
+    "/safe/search",
+    "/safe/item",
+    "/safe/redirect",
+    "/safe/form",
+    "/home"
+  ],
+  "expected_findings": [
+    {
+      "check_id": "missing_security_headers",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/",
+      "parameter": null
+    },
+    {
+      "check_id": "weak_csp",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/weak-csp",
+      "parameter": "Content-Security-Policy"
+    },
+    {
+      "check_id": "verbose_error_pages",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/debug-error",
+      "parameter": null
+    },
+    {
+      "check_id": "server_banner_leak",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/",
+      "parameter": "Server"
+    },
+    {
+      "check_id": "server_banner_leak",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/",
+      "parameter": "X-Powered-By"
+    },
+    {
+      "check_id": "insecure_cookies",
+      "owasp_category": "A07:2021 - Identification and Authentication Failures",
+      "method": "GET",
+      "path": "/",
+      "parameter": "session_id"
+    },
+    {
+      "check_id": "csrf_missing_token",
+      "owasp_category": "A01:2021 - Broken Access Control",
+      "method": "POST",
+      "path": "/login",
+      "parameter": null
+    },
+    {
+      "check_id": "insecure_transport",
+      "owasp_category": "A02:2021 - Cryptographic Failures",
+      "method": "POST",
+      "path": "/login",
+      "parameter": "password"
+    },
+    {
+      "check_id": "outdated_js_components",
+      "owasp_category": "A06:2021 - Vulnerable and Outdated Components",
+      "method": "GET",
+      "path": "/static/jquery-3.4.1.min.js",
+      "parameter": "jquery"
+    },
+    {
+      "check_id": "cors_misconfig",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/api/profile",
+      "parameter": "Access-Control-Allow-Origin"
+    },
+    {
+      "check_id": "sqli_error_based",
+      "owasp_category": "A03:2021 - Injection",
+      "method": "GET",
+      "path": "/items",
+      "parameter": "id"
+    },
+    {
+      "check_id": "sqli_boolean_diff",
+      "owasp_category": "A03:2021 - Injection",
+      "method": "GET",
+      "path": "/catalog",
+      "parameter": "cat"
+    },
+    {
+      "check_id": "xss_reflected",
+      "owasp_category": "A03:2021 - Injection",
+      "method": "GET",
+      "path": "/search",
+      "parameter": "q"
+    },
+    {
+      "check_id": "open_redirect",
+      "owasp_category": "A01:2021 - Broken Access Control",
+      "method": "GET",
+      "path": "/redirect",
+      "parameter": "next"
+    },
+    {
+      "check_id": "idor_heuristic",
+      "owasp_category": "A01:2021 - Broken Access Control",
+      "method": "GET",
+      "path": "/users",
+      "parameter": "id"
+    },
+    {
+      "check_id": "sensitive_files",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/.env",
+      "parameter": "/.env"
+    },
+    {
+      "check_id": "sensitive_files",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/.git/HEAD",
+      "parameter": "/.git/HEAD"
+    },
+    {
+      "check_id": "directory_listing",
+      "owasp_category": "A05:2021 - Security Misconfiguration",
+      "method": "GET",
+      "path": "/uploads/",
+      "parameter": "/uploads/"
+    },
+    {
+      "check_id": "forced_browsing_admin",
+      "owasp_category": "A01:2021 - Broken Access Control",
+      "method": "GET",
+      "path": "/admin",
+      "parameter": "/admin"
+    }
+  ],
+  "clean_control_routes": [
+    "/safe/search",
+    "/safe/item",
+    "/safe/redirect",
+    "/safe/form"
+  ]
+}
