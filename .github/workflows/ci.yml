@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    name: Backend & Accuracy Tests (Python 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run full pytest suite (88 tests)
+        run: pytest backend/tests -v
+
+  frontend-and-security:
+    name: Frontend ES Modules & Security Invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify all frontend ES modules syntax
+        run: |
+          for file in frontend/js/*.js frontend/js/components/*.js; do
+            echo "Checking $file"
+            node --experimental-default-type=module --check "$file"
+          done
+
+      - name: Verify zero DOM XSS sinks, template safety & scanner isolation
+        run: |
+          python - <<'PY'
+          import ast, pathlib, re
+
+          for js in pathlib.Path("frontend/js").rglob("*.js"):
+              src = js.read_text(encoding="utf-8")
+              assert not re.search(r"\.(innerHTML|outerHTML|insertAdjacentHTML)\b|\beval\s*\(", src), f"XSS sink in {js}"
+
+          tpl = pathlib.Path("backend/app/reports/templates/report.html.j2").read_text(encoding="utf-8")
+          assert "|safe" not in tpl and "<script" not in tpl.lower(), "Unsafe template construct"
+
+          forbidden = {"fastapi", "sqlalchemy", "pydantic", "pydantic_settings", "starlette"}
+          for py in pathlib.Path("backend/scanner").rglob("*.py"):
+              tree = ast.parse(py.read_text(encoding="utf-8"))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      for alias in node.names:
+                          assert alias.name.split(".")[0] not in forbidden, f"Forbidden import {alias.name} in {py}"
+                  elif isinstance(node, ast.ImportFrom) and node.module:
+                      assert node.module.split(".")[0] not in forbidden, f"Forbidden import {node.module} in {py}"
+
+          print("All security & architecture invariants passed.")
+          PY
+
+  docker-verify:
+    name: Docker Build & Live Container Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Compose manifests
+        run: |
+          docker compose config --quiet
+          docker compose -f docker-compose.testbench.yml config --quiet
+
+      - name: Build scanner and VulnBench images
+        run: |
+          docker build -t owasp-lite-scanner:ci .
+          docker build -t owasp-vulnbench:ci ./testbench/vulnbench
+
+      - name: Smoke-test live containers
+        run: |
+          docker run -d --name ci-scanner -p 127.0.0.1:8000:8000 owasp-lite-scanner:ci
+          docker run -d --name ci-vulnbench -p 127.0.0.1:5050:5050 owasp-vulnbench:ci
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8000/api/health && curl -fsS http://127.0.0.1:5050/ > /dev/null; then
+              echo "Both containers healthy!"
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs ci-scanner
+          docker logs ci-vulnbench
+          exit 1

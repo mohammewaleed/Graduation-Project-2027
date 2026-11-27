@@ -1,5 +1,7 @@
 # OWASP-Lite Scanner (`v1.0.0`)
 
+[![CI](https://github.com/mohammewaleed/Graduation-Project-2027/actions/workflows/ci.yml/badge.svg)](https://github.com/mohammewaleed/Graduation-Project-2027/actions/workflows/ci.yml)
+
 > **Lightweight OWASP Top 10 (2021) Vulnerability Scanner — Developer-Experience Focus**  
 > Academic Graduation Project · Department of Cyber Security (2026–2027) · Supervised by **Dr. Samar**
 
