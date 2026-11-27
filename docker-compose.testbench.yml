@@ -30,4 +30,5 @@ services:
 
 networks:
   testbench_net:
+    name: owasp_testbench_net
     driver: bridge

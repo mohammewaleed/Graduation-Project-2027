@@ -1,0 +1,19 @@
+# Keep Docker build contexts small, fast, and free of local secrets/state
+.git
+.gitignore
+.env
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.ruff_cache
+data
+docs
+scripts
+testbench
+*.db
+*.db-shm
+*.db-wal
+*.log

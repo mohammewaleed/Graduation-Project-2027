@@ -15,6 +15,9 @@ services:
       SCAN_MAX_REQUESTS: "${SCAN_MAX_REQUESTS:-2000}"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    networks:
+      - default
+      - testbench_net
     volumes:
       - scanner_data:/app/data
     healthcheck:
@@ -48,3 +51,8 @@ services:
 volumes:
   scanner_data:
   postgres_data:
+
+networks:
+  testbench_net:
+    name: owasp_testbench_net
+    driver: bridge
