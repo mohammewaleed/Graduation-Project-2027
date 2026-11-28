@@ -123,7 +123,7 @@ uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --no-server-header
 python testbench/vulnbench/app.py --host 127.0.0.1 --port 5050
 ```
 
-<details>
+
 <summary><strong>🐳 Option 2 · Docker Compose (Scanner + Optional Testbench + Optional PostgreSQL 16)</strong></summary>
 
 > **Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Compose v2; **WSL 2** enabled on Windows) · Free port `8000`
@@ -144,7 +144,7 @@ DATABASE_URL=postgresql+psycopg://scanner:scanner@postgres:5432/scanner docker c
 docker compose -f docker-compose.yml -f docker-compose.testbench.yml down
 ```
 
-</details>
+
 
 ### ⚡ First Scan in 60 Seconds
 
