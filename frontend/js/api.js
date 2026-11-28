@@ -154,6 +154,10 @@ export function getProject(id) {
   return request(`/projects/${encodeURIComponent(id)}`, { method: "GET" });
 }
 
+export function updateProject(id, payload) {
+  return request(`/projects/${encodeURIComponent(id)}`, { method: "PATCH", json: payload });
+}
+
 export function deleteProject(id) {
   return request(`/projects/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
@@ -177,6 +181,14 @@ export function startScan(projectId, payload = {}) {
 
 export function getScan(scanId) {
   return request(`/scans/${encodeURIComponent(scanId)}`, { method: "GET" });
+}
+
+export function updateScan(scanId, payload) {
+  return request(`/scans/${encodeURIComponent(scanId)}`, { method: "PATCH", json: payload });
+}
+
+export function deleteScan(scanId) {
+  return request(`/scans/${encodeURIComponent(scanId)}`, { method: "DELETE" });
 }
 
 export function cancelScan(scanId) {

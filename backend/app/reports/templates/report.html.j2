@@ -167,37 +167,84 @@
       color: #f8fafc;
     }
 
-    /* KPI Strip */
-    .kpi-grid {
+    /* KPI Strip (2 Balanced Rows: 4 Overview + 5 Severity) */
+    .kpi-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-row-overview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
-      gap: 10px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-row-severity {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 780px) {
+      .kpi-row-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .kpi-row-severity {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-row-severity {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     .kpi-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 12px 14px;
+      padding: 14px 16px;
       box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-width: 0;
     }
 
     .kpi-label {
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--text-subtle);
       font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .kpi-value {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 800;
-      line-height: 1.2;
-      margin-top: 4px;
+      line-height: 1.15;
+      margin-top: 6px;
       color: var(--text);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
     }
+
+    .kpi-card.kpi-sev {
+      border-top-width: 3px;
+      padding: 12px 16px 14px;
+    }
+
+    .kpi-card.kpi-critical { border-top-color: var(--critical); background: linear-gradient(180deg, var(--critical-bg) 0%, var(--surface) 58%); }
+    .kpi-card.kpi-high     { border-top-color: var(--high);     background: linear-gradient(180deg, var(--high-bg) 0%, var(--surface) 58%); }
+    .kpi-card.kpi-medium   { border-top-color: var(--medium);   background: linear-gradient(180deg, var(--medium-bg) 0%, var(--surface) 58%); }
+    .kpi-card.kpi-low      { border-top-color: var(--low);      background: linear-gradient(180deg, var(--low-bg) 0%, var(--surface) 58%); }
+    .kpi-card.kpi-info     { border-top-color: var(--info);     background: linear-gradient(180deg, var(--info-bg) 0%, var(--surface) 58%); }
 
     .kpi-card.kpi-critical .kpi-value { color: var(--critical); }
     .kpi-card.kpi-high .kpi-value { color: var(--high); }
@@ -206,9 +253,12 @@
     .kpi-card.kpi-info .kpi-value { color: var(--info); }
 
     .kpi-sub {
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-subtle);
-      margin-top: 2px;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* Analytics Row */
@@ -1010,43 +1060,51 @@
     {% endif %}
 
     <!-- Summary KPI Strip -->
-    <section class="kpi-grid" aria-label="Summary Metrics">
-      <div class="kpi-card">
-        <div class="kpi-label">Total Findings</div>
-        <div class="kpi-value">{{ summary.total_findings }}</div>
-        <div class="kpi-sub">{{ summary.active_findings }} active{% if summary.false_positives %} · {{ summary.false_positives }} FP{% endif %}</div>
+    <section class="kpi-section" aria-label="Summary Metrics">
+      <div class="kpi-row-overview">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Findings</div>
+          <div class="kpi-value">{{ summary.total_findings }}</div>
+          <div class="kpi-sub">{{ summary.active_findings }} active{% if summary.false_positives %} · {{ summary.false_positives }} FP{% endif %}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Endpoints</div>
+          <div class="kpi-value">{{ summary.endpoints_discovered }}</div>
+          <div class="kpi-sub">Discovered attack surface</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pages Crawled</div>
+          <div class="kpi-value">{{ scan.pages_crawled }}</div>
+          <div class="kpi-sub">In-scope HTML &amp; routes</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Requests Sent</div>
+          <div class="kpi-value">{{ scan.requests_sent }}</div>
+          <div class="kpi-sub">Rate-limited HTTP probes</div>
+        </div>
       </div>
-      <div class="kpi-card kpi-critical">
-        <div class="kpi-label">Critical</div>
-        <div class="kpi-value">{{ summary.severity_counts.critical }}</div>
-      </div>
-      <div class="kpi-card kpi-high">
-        <div class="kpi-label">High</div>
-        <div class="kpi-value">{{ summary.severity_counts.high }}</div>
-      </div>
-      <div class="kpi-card kpi-medium">
-        <div class="kpi-label">Medium</div>
-        <div class="kpi-value">{{ summary.severity_counts.medium }}</div>
-      </div>
-      <div class="kpi-card kpi-low">
-        <div class="kpi-label">Low</div>
-        <div class="kpi-value">{{ summary.severity_counts.low }}</div>
-      </div>
-      <div class="kpi-card kpi-info">
-        <div class="kpi-label">Info</div>
-        <div class="kpi-value">{{ summary.severity_counts.info }}</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Endpoints</div>
-        <div class="kpi-value">{{ summary.endpoints_discovered }}</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Pages Crawled</div>
-        <div class="kpi-value">{{ scan.pages_crawled }}</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Requests Sent</div>
-        <div class="kpi-value">{{ scan.requests_sent }}</div>
+
+      <div class="kpi-row-severity">
+        <div class="kpi-card kpi-sev kpi-critical">
+          <div class="kpi-label">Critical</div>
+          <div class="kpi-value">{{ summary.severity_counts.critical }}</div>
+        </div>
+        <div class="kpi-card kpi-sev kpi-high">
+          <div class="kpi-label">High</div>
+          <div class="kpi-value">{{ summary.severity_counts.high }}</div>
+        </div>
+        <div class="kpi-card kpi-sev kpi-medium">
+          <div class="kpi-label">Medium</div>
+          <div class="kpi-value">{{ summary.severity_counts.medium }}</div>
+        </div>
+        <div class="kpi-card kpi-sev kpi-low">
+          <div class="kpi-label">Low</div>
+          <div class="kpi-value">{{ summary.severity_counts.low }}</div>
+        </div>
+        <div class="kpi-card kpi-sev kpi-info">
+          <div class="kpi-label">Info</div>
+          <div class="kpi-value">{{ summary.severity_counts.info }}</div>
+        </div>
       </div>
     </section>
 

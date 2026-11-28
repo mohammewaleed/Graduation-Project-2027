@@ -9,7 +9,7 @@ import time
 from collections.abc import AsyncIterator
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.engine import Engine
@@ -25,6 +25,7 @@ from backend.app.schemas import (
     ScanCompareOut,
     ScanCreate,
     ScanOut,
+    ScanUpdate,
 )
 from backend.app.worker import (
     TERMINAL_SCAN_STATUSES,
@@ -60,6 +61,18 @@ def _get_session_factory(request: Request, db: Session) -> sessionmaker[Session]
     return state_factory or SessionLocal
 
 
+def _safe_scan_config(raw_json: str) -> dict[str, Any]:
+    """Parse stored scan config JSON while redacting sensitive auth secrets."""
+    try:
+        parsed = json.loads(raw_json or "{}")
+    except (TypeError, ValueError):
+        return {}
+    if not isinstance(parsed, dict):
+        return {}
+    redacted_keys = {"auth_value", "dvwa_password"}
+    return {k: v for k, v in parsed.items() if k not in redacted_keys}
+
+
 def _serialize_scan(scan: Scan, project: Project | None = None) -> ScanOut:
     """Convert an ORM ``Scan`` (and owning ``Project``) into ``ScanOut``."""
     owner = project if project is not None else scan.project
@@ -77,6 +90,7 @@ def _serialize_scan(scan: Scan, project: Project | None = None) -> ScanOut:
         risk_score=scan.risk_score,
         summary=scan.summary,
         errors=scan.errors,
+        config=_safe_scan_config(scan.config_json),
         started_at=scan.started_at,
         finished_at=scan.finished_at,
         created_at=scan.created_at,
@@ -302,6 +316,90 @@ def get_scan(
             },
         )
     return _serialize_scan(scan)
+
+
+@router.patch("/scans/{scan_id}", response_model=ScanOut)
+def update_scan(
+    scan_id: str,
+    payload: ScanUpdate,
+    db: Session = Depends(get_db),
+) -> ScanOut:
+    """Update a non-running scan's profile or saved crawl/check parameters."""
+    stmt = select(Scan).options(joinedload(Scan.project)).where(Scan.id == scan_id)
+    scan = db.scalars(stmt).first()
+    if scan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "code": "SCAN_NOT_FOUND",
+                "message": f"Scan '{scan_id}' was not found.",
+            },
+        )
+
+    if scan.status in (ScanStatus.CRAWLING.value, ScanStatus.SCANNING.value):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "SCAN_ACTIVE",
+                "message": "Cannot edit a scan while it is actively running. Cancel it first.",
+            },
+        )
+
+    try:
+        stored_cfg = json.loads(scan.config_json or "{}")
+        if not isinstance(stored_cfg, dict):
+            stored_cfg = {}
+    except (TypeError, ValueError):
+        stored_cfg = {}
+
+    if payload.profile is not None:
+        scan.profile = payload.profile.value
+        stored_cfg["profile"] = payload.profile.value
+    if payload.max_depth is not None:
+        stored_cfg["max_depth"] = payload.max_depth
+    if payload.max_pages is not None:
+        stored_cfg["max_pages"] = payload.max_pages
+    if payload.enabled_checks is not None:
+        stored_cfg["enabled_checks"] = payload.enabled_checks
+
+    scan.config_json = json.dumps(stored_cfg)
+    db.commit()
+    db.refresh(scan)
+    return _serialize_scan(scan)
+
+
+@router.delete("/scans/{scan_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_scan(
+    scan_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> Response:
+    """Delete a scan and cascade removal of its endpoints and findings."""
+    scan = db.get(Scan, scan_id)
+    if scan is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "code": "SCAN_NOT_FOUND",
+                "message": f"Scan '{scan_id}' was not found.",
+            },
+        )
+
+    if scan.status in (ScanStatus.CRAWLING.value, ScanStatus.SCANNING.value):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "code": "SCAN_ACTIVE",
+                "message": "Cancel the running scan before deleting it.",
+            },
+        )
+
+    if scan.status == ScanStatus.QUEUED.value:
+        _get_job_manager(request).cancel_scan(scan_id)
+
+    db.delete(scan)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/scans/{scan_id}/cancel", response_model=ScanOut)

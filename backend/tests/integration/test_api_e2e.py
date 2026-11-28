@@ -765,3 +765,75 @@ def test_project_deletion_cascade(
     finding_after = api_client.get(f"/api/findings/{finding_id}")
     assert finding_after.status_code == 404
     assert finding_after.json()["error"]["code"] == "FINDING_NOT_FOUND"
+
+
+def test_project_update_and_scan_edit_delete(
+    api_client: TestClient,
+    vuln_server: _VulnerableTestServer,
+) -> None:
+    """PATCH /api/projects/{id}, PATCH /api/scans/{id}, and DELETE /api/scans/{id} behave cleanly."""
+    vuln_server.reset_flags()
+    project = _create_local_project(
+        api_client,
+        vuln_server.base_url,
+        name="Editable Local App",
+        target_stack="fastapi",
+    )
+
+    # 1. PATCH project name & stack succeeds; public URL is still blocked by ScopeGuardrail
+    patch_proj = api_client.patch(
+        f"/api/projects/{project['id']}",
+        json={"name": "Renamed Local App", "target_stack": "express"},
+    )
+    assert patch_proj.status_code == 200
+    assert patch_proj.json()["name"] == "Renamed Local App"
+    assert patch_proj.json()["target_stack"] == "express"
+
+    blocked_patch = api_client.patch(
+        f"/api/projects/{project['id']}",
+        json={"base_url": "https://example.com"},
+    )
+    assert blocked_patch.status_code == 403
+    assert blocked_patch.json()["error"]["code"] == "TARGET_NOT_ALLOWED"
+
+    # 2. Run a quick scan, then PATCH its profile and crawl settings
+    start_resp = api_client.post(
+        f"/api/projects/{project['id']}/scans",
+        json={
+            "profile": "quick",
+            "max_depth": 2,
+            "max_pages": 25,
+            "auth_type": "bearer",
+            "auth_value": "super-secret-token",
+            "enabled_checks": ["missing_security_headers"],
+        },
+    )
+    assert start_resp.status_code == 201
+    scan_id = start_resp.json()["id"]
+    _stream_sse_events(api_client, scan_id)
+
+    patch_scan = api_client.patch(
+        f"/api/scans/{scan_id}",
+        json={"profile": "deep", "max_depth": 4, "max_pages": 150},
+    )
+    assert patch_scan.status_code == 200
+    updated = patch_scan.json()
+    assert updated["profile"] == "deep"
+    assert updated["config"]["max_depth"] == 4
+    assert updated["config"]["max_pages"] == 150
+    assert "auth_value" not in updated["config"]
+
+    findings = api_client.get(f"/api/scans/{scan_id}/findings").json()
+    assert len(findings) >= 1
+    finding_id = findings[0]["id"]
+
+    # 3. DELETE /api/scans/{id} cascades findings/endpoints while keeping the parent project
+    del_scan = api_client.delete(f"/api/scans/{scan_id}")
+    assert del_scan.status_code == 204
+
+    assert api_client.get(f"/api/scans/{scan_id}").status_code == 404
+    assert api_client.get(f"/api/findings/{finding_id}").status_code == 404
+    assert api_client.get(f"/api/projects/{project['id']}").status_code == 200
+
+    # Cleanup
+    assert api_client.delete(f"/api/projects/{project['id']}").status_code == 204

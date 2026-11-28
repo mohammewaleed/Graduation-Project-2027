@@ -72,6 +72,37 @@ class ProjectCreate(BaseModel):
         return normalized
 
 
+class ProjectUpdate(BaseModel):
+    """Payload for editing an existing authorized local project target."""
+
+    name: str | None = Field(default=None, min_length=1, max_length=255)
+    base_url: str | None = Field(default=None, min_length=1, max_length=512)
+    target_stack: str | None = None
+
+    @field_validator("name", "base_url")
+    @classmethod
+    def _strip_optional_non_empty(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        if not cleaned:
+            raise ValueError("Field must not be blank.")
+        return cleaned
+
+    @field_validator("target_stack")
+    @classmethod
+    def _validate_optional_target_stack(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip().lower()
+        if normalized not in SUPPORTED_TARGET_STACKS:
+            allowed = ", ".join(sorted(SUPPORTED_TARGET_STACKS))
+            raise ValueError(
+                f"Unsupported target_stack '{value}'. Must be one of: {allowed}."
+            )
+        return normalized
+
+
 class ProjectOut(BaseModel):
     """Serialized project record with aggregate scan telemetry."""
 
@@ -113,6 +144,15 @@ class ScanCreate(BaseModel):
         return normalized
 
 
+class ScanUpdate(BaseModel):
+    """Payload for editing a scan's profile or saved crawl/check configuration."""
+
+    profile: ScanProfile | None = None
+    max_depth: int | None = Field(default=None, ge=0, le=10)
+    max_pages: int | None = Field(default=None, ge=1, le=2000)
+    enabled_checks: list[str] | None = None
+
+
 class ScanOut(BaseModel):
     """Serialized scan job state, progress telemetry, and severity rollups."""
 
@@ -131,6 +171,7 @@ class ScanOut(BaseModel):
     risk_score: int = 0
     summary: dict[str, int] = Field(default_factory=_default_summary)
     errors: list[str] = Field(default_factory=list)
+    config: dict[str, Any] = Field(default_factory=dict)
     started_at: datetime
     finished_at: datetime | None = None
     created_at: datetime
@@ -226,10 +267,12 @@ __all__ = [
     "FindingTriageUpdate",
     "ProjectCreate",
     "ProjectOut",
+    "ProjectUpdate",
     "SUPPORTED_AUTH_TYPES",
     "SUPPORTED_TARGET_STACKS",
     "ScanCompareCounts",
     "ScanCompareOut",
     "ScanCreate",
     "ScanOut",
+    "ScanUpdate",
 ]

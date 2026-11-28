@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, selectinload
 from backend.app.config import settings
 from backend.app.database import get_db
 from backend.app.db_models import Project, Scan, utcnow
-from backend.app.schemas import ProjectCreate, ProjectOut
+from backend.app.schemas import ProjectCreate, ProjectOut, ProjectUpdate
 from backend.scanner.policy import ScopeGuardrail
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
@@ -97,6 +97,41 @@ def get_project(
                 "message": f"Project '{project_id}' was not found.",
             },
         )
+    return _serialize_project(project, list(project.scans))
+
+
+@router.patch("/{project_id}", response_model=ProjectOut)
+def update_project(
+    project_id: str,
+    payload: ProjectUpdate,
+    db: Session = Depends(get_db),
+) -> ProjectOut:
+    """Update an authorized local target project's name, base URL, or preferred stack."""
+    stmt = (
+        select(Project)
+        .options(selectinload(Project.scans))
+        .where(Project.id == project_id)
+    )
+    project = db.scalars(stmt).first()
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail={
+                "code": "PROJECT_NOT_FOUND",
+                "message": f"Project '{project_id}' was not found.",
+            },
+        )
+
+    if payload.base_url is not None:
+        guardrail = ScopeGuardrail(allowlist=settings.allowlist_hosts)
+        project.base_url = guardrail.validate_url(payload.base_url)
+    if payload.name is not None:
+        project.name = payload.name
+    if payload.target_stack is not None:
+        project.target_stack = payload.target_stack
+
+    db.commit()
+    db.refresh(project)
     return _serialize_project(project, list(project.scans))
 
 

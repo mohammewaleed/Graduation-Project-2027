@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/css/styles.css?v=9" />
+  <link rel="stylesheet" href="/css/styles.css?v=10" />
 </head>
 <body>
   <div class="app-shell">
@@ -228,9 +228,56 @@
     </div>
   </div>
 
+  <!-- Edit Scan Modal -->
+  <div id="edit-scan-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="edit-scan-modal-title" hidden>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 id="edit-scan-modal-title" class="modal-title">Edit Scan Configuration</h3>
+          <p id="edit-scan-modal-subtitle" class="card-subtitle">Update this scan's profile and crawl limits, or open it in Scan Launcher to re-run.</p>
+        </div>
+        <button id="close-edit-scan-modal-btn" type="button" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="edit-scan-form" novalidate>
+        <div class="modal-body form-stack">
+          <div id="edit-scan-form-error" class="form-error hidden" role="alert" hidden></div>
+
+          <div class="form-group">
+            <label for="edit-scan-profile" class="form-label">Scan Profile</label>
+            <select id="edit-scan-profile" name="profile" class="form-select">
+              <option value="quick">Quick (8 Passive Checks)</option>
+              <option value="standard">Standard (14 Balanced Checks)</option>
+              <option value="deep">Deep (All 17 Checks)</option>
+            </select>
+          </div>
+
+          <div class="row" style="gap: 12px;">
+            <div class="form-group" style="flex: 1;">
+              <label for="edit-scan-max-depth" class="form-label">Max Crawl Depth (0–10)</label>
+              <input id="edit-scan-max-depth" name="max_depth" type="number" min="0" max="10" class="form-input mono" placeholder="Profile default" />
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="edit-scan-max-pages" class="form-label">Max Pages (1–2000)</label>
+              <input id="edit-scan-max-pages" name="max_pages" type="number" min="1" max="2000" class="form-input mono" placeholder="Profile default" />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="justify-content: space-between;">
+          <button id="edit-scan-rerun-btn" type="button" class="btn btn-secondary">Edit in Scan Launcher →</button>
+          <div class="row" style="gap: 8px;">
+            <button id="cancel-edit-scan-modal-btn" type="button" class="btn btn-ghost">Cancel</button>
+            <button id="submit-edit-scan-btn" type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification Stack -->
   <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-  <script type="module" src="/js/app.js?v=10"></script>
+  <script type="module" src="/js/app.js?v=11"></script>
 </body>
 </html>

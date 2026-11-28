@@ -9,12 +9,15 @@ import {
   ApiError,
   createProject,
   deleteProject,
+  deleteScan,
   getChecks,
   getHealth,
   listProjects,
   listScans,
   startScan,
-} from "./api.js";
+  updateProject,
+  updateScan,
+} from "./api.js?v=11";
 import { CompareScansView } from "./components/compare_view.js?v=7";
 import { FindingsExplorerView } from "./components/findings_explorer.js?v=10";
 import { FixModal } from "./components/fix_modal.js?v=10";
@@ -161,6 +164,7 @@ const dom = {
   },
 
   projectModal: document.getElementById("project-modal"),
+  projectModalTitle: document.getElementById("project-modal-title"),
   closeProjectModalBtn: document.getElementById("close-project-modal-btn"),
   cancelProjectModalBtn: document.getElementById("cancel-project-modal-btn"),
   projectForm: document.getElementById("project-form"),
@@ -170,6 +174,19 @@ const dom = {
   projectStackSelect: document.getElementById("project-target-stack"),
   projectAuthorizedCheckbox: document.getElementById("project-authorized"),
   submitProjectBtn: document.getElementById("submit-project-btn"),
+
+  editScanModal: document.getElementById("edit-scan-modal"),
+  editScanModalTitle: document.getElementById("edit-scan-modal-title"),
+  editScanModalSubtitle: document.getElementById("edit-scan-modal-subtitle"),
+  closeEditScanModalBtn: document.getElementById("close-edit-scan-modal-btn"),
+  cancelEditScanModalBtn: document.getElementById("cancel-edit-scan-modal-btn"),
+  editScanRerunBtn: document.getElementById("edit-scan-rerun-btn"),
+  editScanForm: document.getElementById("edit-scan-form"),
+  editScanFormError: document.getElementById("edit-scan-form-error"),
+  editScanProfileSelect: document.getElementById("edit-scan-profile"),
+  editScanMaxDepthInput: document.getElementById("edit-scan-max-depth"),
+  editScanMaxPagesInput: document.getElementById("edit-scan-max-pages"),
+  submitEditScanBtn: document.getElementById("submit-edit-scan-btn"),
 
   fixModal: document.getElementById("fix-modal"),
   fixModalBody: document.getElementById("fix-modal-body"),
@@ -182,7 +199,11 @@ let liveScanView = null;
 let findingsExplorerView = null;
 let compareScansView = null;
 let isProjectModalOpen = false;
+let editingProjectId = null;
 let projectModalPreviousFocus = null;
+let isEditScanModalOpen = false;
+let editingScan = null;
+let editScanModalPreviousFocus = null;
 
 /* ---------- Helpers ---------- */
 
@@ -367,16 +388,34 @@ function showProjectFormError(message) {
   dom.projectFormError.hidden = false;
 }
 
-function openProjectModal() {
+function openProjectModal(project = null) {
   if (!dom.projectModal || !dom.projectForm) return;
   projectModalPreviousFocus =
     document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
   dom.projectForm.reset();
   showProjectFormError(null);
+  editingProjectId = project ? project.id : null;
+
+  if (dom.projectModalTitle) {
+    dom.projectModalTitle.textContent = project
+      ? "Edit Authorized Local Project"
+      : "New Authorized Local Project";
+  }
+
+  if (project) {
+    if (dom.projectNameInput) dom.projectNameInput.value = project.name || "";
+    if (dom.projectBaseUrlInput) dom.projectBaseUrlInput.value = project.base_url || "";
+    if (dom.projectStackSelect) {
+      dom.projectStackSelect.value = project.target_stack || "fastapi";
+      dom.projectStackSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (dom.projectAuthorizedCheckbox) dom.projectAuthorizedCheckbox.checked = true;
+  }
+
   if (dom.submitProjectBtn) {
     dom.submitProjectBtn.disabled = false;
-    dom.submitProjectBtn.textContent = "Create Project";
+    dom.submitProjectBtn.textContent = project ? "Save Changes" : "Create Project";
   }
 
   isProjectModalOpen = true;
@@ -392,9 +431,10 @@ function openProjectModal() {
 function closeProjectModal() {
   if (!dom.projectModal) return;
   isProjectModalOpen = false;
+  editingProjectId = null;
   dom.projectModal.classList.add("hidden");
   dom.projectModal.hidden = true;
-  if (!fixModal || !fixModal.isOpen()) {
+  if ((!fixModal || !fixModal.isOpen()) && !isEditScanModalOpen) {
     document.body.style.overflow = "";
   }
   if (projectModalPreviousFocus && typeof projectModalPreviousFocus.focus === "function") {
@@ -411,6 +451,7 @@ async function handleProjectFormSubmit(event) {
   event.preventDefault();
   showProjectFormError(null);
 
+  const isEditing = Boolean(editingProjectId);
   const name = String(dom.projectNameInput?.value || "").trim();
   const baseUrl = String(dom.projectBaseUrlInput?.value || "").trim();
   const targetStack = String(dom.projectStackSelect?.value || "fastapi").trim().toLowerCase();
@@ -438,22 +479,31 @@ async function handleProjectFormSubmit(event) {
 
   if (dom.submitProjectBtn) {
     dom.submitProjectBtn.disabled = true;
-    dom.submitProjectBtn.textContent = "Creating...";
+    dom.submitProjectBtn.textContent = isEditing ? "Saving..." : "Creating...";
   }
 
   try {
-    const created = await createProject({
-      name,
-      base_url: baseUrl,
-      target_stack: targetStack,
-      authorized_confirmed: true,
-    });
-
-    closeProjectModal();
-    showToast(`Project "${created.name}" created successfully.`, "success");
-
-    if (!state.launcher.projectId || state.activeView === "launcher") {
-      state.launcher.projectId = created.id;
+    let saved;
+    if (isEditing) {
+      saved = await updateProject(editingProjectId, {
+        name,
+        base_url: baseUrl,
+        target_stack: targetStack,
+      });
+      closeProjectModal();
+      showToast(`Project "${saved.name}" updated.`, "success");
+    } else {
+      saved = await createProject({
+        name,
+        base_url: baseUrl,
+        target_stack: targetStack,
+        authorized_confirmed: true,
+      });
+      closeProjectModal();
+      showToast(`Project "${saved.name}" created successfully.`, "success");
+      if (!state.launcher.projectId || state.activeView === "launcher") {
+        state.launcher.projectId = saved.id;
+      }
     }
 
     await refreshCoreData({ skipChecks: true });
@@ -463,12 +513,202 @@ async function handleProjectFormSubmit(event) {
       renderLauncher();
     }
   } catch (err) {
-    showProjectFormError(formatApiError(err, "Failed to create project."));
+    showProjectFormError(
+      formatApiError(err, isEditing ? "Failed to update project." : "Failed to create project."),
+    );
   } finally {
     if (dom.submitProjectBtn) {
       dom.submitProjectBtn.disabled = false;
-      dom.submitProjectBtn.textContent = "Create Project";
+      dom.submitProjectBtn.textContent = editingProjectId ? "Save Changes" : "Create Project";
     }
+  }
+}
+
+/* ---------- Edit Scan Modal & Scan Deletion ---------- */
+
+function showEditScanFormError(message) {
+  if (!dom.editScanFormError) return;
+  if (!message) {
+    dom.editScanFormError.textContent = "";
+    dom.editScanFormError.classList.add("hidden");
+    dom.editScanFormError.hidden = true;
+    return;
+  }
+  dom.editScanFormError.textContent = message;
+  dom.editScanFormError.classList.remove("hidden");
+  dom.editScanFormError.hidden = false;
+}
+
+function openEditScanModal(scan) {
+  if (!scan || !dom.editScanModal || !dom.editScanForm) return;
+  editScanModalPreviousFocus =
+    document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+  editingScan = scan;
+  dom.editScanForm.reset();
+  showEditScanFormError(null);
+
+  const cfg = scan.config && typeof scan.config === "object" ? scan.config : {};
+  const projectObj = getProjectById(scan.project_id);
+  const projectName = scan.project_name || projectObj?.name || `Project ${shortId(scan.project_id)}`;
+
+  if (dom.editScanModalTitle) {
+    dom.editScanModalTitle.textContent = `Edit Scan #${shortId(scan.id)}`;
+  }
+  if (dom.editScanModalSubtitle) {
+    dom.editScanModalSubtitle.textContent = `${projectName} · Save changes or open in Scan Launcher to re-run.`;
+  }
+  if (dom.editScanProfileSelect) {
+    dom.editScanProfileSelect.value = String(scan.profile || "standard").toLowerCase();
+    dom.editScanProfileSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  if (dom.editScanMaxDepthInput) {
+    dom.editScanMaxDepthInput.value =
+      cfg.max_depth !== undefined && cfg.max_depth !== null ? String(cfg.max_depth) : "";
+  }
+  if (dom.editScanMaxPagesInput) {
+    dom.editScanMaxPagesInput.value =
+      cfg.max_pages !== undefined && cfg.max_pages !== null ? String(cfg.max_pages) : "";
+  }
+
+  const isRunning =
+    String(scan.status || "").toLowerCase() === "crawling" ||
+    String(scan.status || "").toLowerCase() === "scanning";
+  if (dom.submitEditScanBtn) {
+    dom.submitEditScanBtn.disabled = isRunning;
+    dom.submitEditScanBtn.textContent = "Save Changes";
+  }
+  if (isRunning) {
+    showEditScanFormError("This scan is currently running. Cancel it first to edit saved fields, or click 'Edit in Scan Launcher'.");
+  }
+
+  isEditScanModalOpen = true;
+  dom.editScanModal.classList.remove("hidden");
+  dom.editScanModal.hidden = false;
+  document.body.style.overflow = "hidden";
+  dom.editScanProfileSelect?.focus();
+}
+
+function closeEditScanModal() {
+  if (!dom.editScanModal) return;
+  isEditScanModalOpen = false;
+  editingScan = null;
+  dom.editScanModal.classList.add("hidden");
+  dom.editScanModal.hidden = true;
+  if ((!fixModal || !fixModal.isOpen()) && !isProjectModalOpen) {
+    document.body.style.overflow = "";
+  }
+  if (editScanModalPreviousFocus && typeof editScanModalPreviousFocus.focus === "function") {
+    try {
+      editScanModalPreviousFocus.focus();
+    } catch (_err) {
+      // Ignore if previous focus target was detached.
+    }
+  }
+  editScanModalPreviousFocus = null;
+}
+
+function prefillLauncherFromScan(scan) {
+  if (!scan) return;
+  const cfg = scan.config && typeof scan.config === "object" ? scan.config : {};
+  state.launcher.projectId = scan.project_id || state.launcher.projectId;
+  state.launcher.profile = String(dom.editScanProfileSelect?.value || scan.profile || "standard").toLowerCase();
+  const depthVal = String(dom.editScanMaxDepthInput?.value ?? (cfg.max_depth ?? "")).trim();
+  const pagesVal = String(dom.editScanMaxPagesInput?.value ?? (cfg.max_pages ?? "")).trim();
+  state.launcher.maxDepth = depthVal;
+  state.launcher.maxPages = pagesVal;
+  if (Array.isArray(cfg.enabled_checks) && cfg.enabled_checks.length > 0) {
+    state.launcher.selectedCheckIds = new Set(cfg.enabled_checks);
+    state.launcher.isCustomChecksModified = true;
+  } else {
+    state.launcher.isCustomChecksModified = false;
+  }
+  state.launcher.error = null;
+}
+
+async function handleEditScanFormSubmit(event) {
+  event.preventDefault();
+  if (!editingScan) return;
+  showEditScanFormError(null);
+
+  const profile = String(dom.editScanProfileSelect?.value || "standard").trim().toLowerCase();
+  const maxDepthRaw = String(dom.editScanMaxDepthInput?.value || "").trim();
+  const maxPagesRaw = String(dom.editScanMaxPagesInput?.value || "").trim();
+
+  const payload = { profile };
+  if (maxDepthRaw !== "") {
+    const parsed = Number.parseInt(maxDepthRaw, 10);
+    if (Number.isNaN(parsed) || parsed < 0 || parsed > 10) {
+      showEditScanFormError("Max crawl depth must be an integer between 0 and 10.");
+      dom.editScanMaxDepthInput?.focus();
+      return;
+    }
+    payload.max_depth = parsed;
+  }
+  if (maxPagesRaw !== "") {
+    const parsed = Number.parseInt(maxPagesRaw, 10);
+    if (Number.isNaN(parsed) || parsed < 1 || parsed > 2000) {
+      showEditScanFormError("Max pages must be an integer between 1 and 2000.");
+      dom.editScanMaxPagesInput?.focus();
+      return;
+    }
+    payload.max_pages = parsed;
+  }
+
+  if (dom.submitEditScanBtn) {
+    dom.submitEditScanBtn.disabled = true;
+    dom.submitEditScanBtn.textContent = "Saving...";
+  }
+
+  try {
+    const updated = await updateScan(editingScan.id, payload);
+    closeEditScanModal();
+    showToast(`Scan #${shortId(updated.id)} updated.`, "success");
+    await refreshCoreData({ skipChecks: true });
+    if (state.activeView === "overview") {
+      renderOverview();
+    }
+  } catch (err) {
+    showEditScanFormError(formatApiError(err, "Failed to update scan."));
+  } finally {
+    if (dom.submitEditScanBtn) {
+      dom.submitEditScanBtn.disabled = false;
+      dom.submitEditScanBtn.textContent = "Save Changes";
+    }
+  }
+}
+
+async function handleDeleteScan(scan) {
+  if (!scan) return;
+  const statusLower = String(scan.status || "").toLowerCase();
+  if (statusLower === "crawling" || statusLower === "scanning") {
+    showToast("Cancel the running scan before deleting it.", "error");
+    return;
+  }
+  const projectObj = getProjectById(scan.project_id);
+  const projectName = scan.project_name || projectObj?.name || `Project ${shortId(scan.project_id)}`;
+  const confirmed = window.confirm(
+    `Delete scan #${shortId(scan.id)} (${projectName} · ${String(scan.profile || "standard").toUpperCase()}) and all of its findings?`,
+  );
+  if (!confirmed) return;
+
+  try {
+    await deleteScan(scan.id);
+    showToast(`Deleted scan #${shortId(scan.id)}.`, "info");
+    if (state.activeScanId === scan.id) {
+      state.activeScanId = null;
+    }
+    if (state.selectedFindingsScanId === scan.id) {
+      state.selectedFindingsScanId = null;
+    }
+    await refreshCoreData({ skipChecks: true });
+    if (state.activeView === "overview") {
+      renderOverview();
+    } else if (state.activeView === "findings") {
+      await findingsExplorerView.load(state.selectedFindingsScanId, state.scans);
+    }
+  } catch (err) {
+    showToast(formatApiError(err, "Failed to delete scan."), "error");
   }
 }
 
@@ -724,14 +964,35 @@ function renderOverview() {
       el("div", { class: "kpi-value mono", text: String(totalProjects) }),
       el("span", { class: "kpi-sub", text: "Authorized local/private targets" }),
     ]),
-    el("div", { class: "kpi-card" }, [
-      el("span", { class: "kpi-label", text: "Total Scans" }),
-      el("div", { class: "kpi-value mono", text: String(totalScans) }),
-      el("span", {
-        class: "kpi-sub",
-        text: `${runningCount} active · ${completedCount} completed`,
-      }),
-    ]),
+    el(
+      "div",
+      {
+        class: "kpi-card clickable",
+        title: "Open Scan Launcher",
+        on: { click: () => navigate("launcher") },
+      },
+      [
+        el("span", { class: "kpi-label", text: "Total Scans" }),
+        el("div", { class: "row-between" }, [
+          el("span", { class: "kpi-value mono", text: String(totalScans) }),
+          el("button", {
+            type: "button",
+            class: "btn btn-ghost btn-sm",
+            text: "Scan →",
+            on: {
+              click: (e) => {
+                e.stopPropagation();
+                navigate("launcher");
+              },
+            },
+          }),
+        ]),
+        el("span", {
+          class: "kpi-sub",
+          text: `${runningCount} active · ${completedCount} completed`,
+        }),
+      ],
+    ),
     el("div", { class: "kpi-card" }, [
       el("span", { class: "kpi-label", text: "Latest Risk (Max / Avg)" }),
       riskKpiValue,
@@ -784,73 +1045,109 @@ function renderOverview() {
         const riskText = hasRisk ? `Risk ${project.latest_risk_score}/100` : "Not Scanned";
         const riskCls = riskColorClass(project.latest_risk_score);
 
-        return el("article", { class: "project-card" }, [
-          el("div", { class: "row-between", style: { alignItems: "center" } }, [
-            el("div", { style: { minWidth: "0", flex: "1" } }, [
-              el("h4", {
-                class: "card-title truncate",
-                text: project.name,
-                title: project.name,
-              }),
-            ]),
-            el("span", { class: `risk-pill ${riskCls}`, text: riskText }),
-          ]),
-
-          el("div", { class: "row text-xs text-muted" }, [
-            el("span", {
-              class: "badge badge-stack",
-              text: formatStackLabel(project.target_stack),
-            }),
-            el("span", {
-              class: "badge badge-neutral mono",
-              text: `${project.scan_count ?? 0} scan${project.scan_count === 1 ? "" : "s"}`,
-            }),
-            el("span", { text: `Added ${formatDate(project.created_at)}` }),
-          ]),
-
-          el(
-            "div",
-            {
-              class: "row",
-              style: { marginTop: "auto", paddingTop: "6px", justifyContent: "space-between" },
+        return el(
+          "article",
+          {
+            class: "project-card clickable",
+            title: `Click to open Scan Launcher for ${project.name}`,
+            on: {
+              click: (e) => {
+                if (e.target.closest("button")) return;
+                navigate("launcher", { projectId: project.id });
+              },
             },
-            [
-              el("div", { class: "row", style: { gap: "8px" } }, [
-                el("button", {
-                  type: "button",
-                  class: "btn btn-primary btn-sm",
-                  text: "Launch Scan",
-                  on: {
-                    click: () => navigate("launcher", { projectId: project.id }),
-                  },
-                }),
-                el("button", {
-                  type: "button",
-                  class: "btn btn-secondary btn-sm",
-                  text: "Latest Results",
-                  disabled: !latestScan,
-                  title: latestScan
-                    ? `Open Findings Explorer for scan #${shortId(latestScan.id)}`
-                    : "Run a scan first to view results",
-                  on: {
-                    click: () => {
-                      if (latestScan) {
-                        navigate("findings", { scanId: latestScan.id });
-                      }
-                    },
-                  },
+          },
+          [
+            el("div", { class: "row-between", style: { alignItems: "center" } }, [
+              el("div", { style: { minWidth: "0", flex: "1" } }, [
+                el("h4", {
+                  class: "card-title truncate",
+                  text: project.name,
+                  title: project.name,
                 }),
               ]),
-              el("button", {
-                type: "button",
-                class: "btn btn-danger btn-sm",
-                text: "Delete",
-                "aria-label": `Delete project ${project.name}`,
-                on: { click: () => handleDeleteProject(project) },
+              el("span", { class: `risk-pill ${riskCls}`, text: riskText }),
+            ]),
+
+            el("div", { class: "row text-xs text-muted" }, [
+              el("span", {
+                class: "badge badge-stack",
+                text: formatStackLabel(project.target_stack),
               }),
-            ],
-          ),
-        ]);
+              el("span", {
+                class: "badge badge-neutral mono",
+                text: `${project.scan_count ?? 0} scan${project.scan_count === 1 ? "" : "s"}`,
+              }),
+              el("span", { text: `Added ${formatDate(project.created_at)}` }),
+            ]),
+
+            el(
+              "div",
+              {
+                class: "row",
+                style: { marginTop: "auto", paddingTop: "6px", justifyContent: "space-between", gap: "8px" },
+              },
+              [
+                el("div", { class: "row", style: { gap: "6px" } }, [
+                  el("button", {
+                    type: "button",
+                    class: "btn btn-primary btn-sm",
+                    text: "Launch Scan",
+                    on: {
+                      click: (e) => {
+                        e.stopPropagation();
+                        navigate("launcher", { projectId: project.id });
+                      },
+                    },
+                  }),
+                  el("button", {
+                    type: "button",
+                    class: "btn btn-secondary btn-sm",
+                    text: "Latest Results",
+                    disabled: !latestScan,
+                    title: latestScan
+                      ? `Open Findings Explorer for scan #${shortId(latestScan.id)}`
+                      : "Run a scan first to view results",
+                    on: {
+                      click: (e) => {
+                        e.stopPropagation();
+                        if (latestScan) {
+                          navigate("findings", { scanId: latestScan.id });
+                        }
+                      },
+                    },
+                  }),
+                ]),
+                el("div", { class: "row", style: { gap: "6px" } }, [
+                  el("button", {
+                    type: "button",
+                    class: "btn btn-ghost btn-sm",
+                    text: "Edit",
+                    "aria-label": `Edit project ${project.name}`,
+                    on: {
+                      click: (e) => {
+                        e.stopPropagation();
+                        openProjectModal(project);
+                      },
+                    },
+                  }),
+                  el("button", {
+                    type: "button",
+                    class: "btn btn-danger btn-sm",
+                    text: "Delete",
+                    "aria-label": `Delete project ${project.name}`,
+                    on: {
+                      click: (e) => {
+                        e.stopPropagation();
+                        handleDeleteProject(project);
+                      },
+                    },
+                  }),
+                ]),
+              ],
+            ),
+          ],
+        );
       }),
     );
   }
@@ -901,63 +1198,121 @@ function renderOverview() {
         const projectName = scan.project_name || projectObj?.name || `Project ${shortId(scan.project_id)}`;
         const riskVal = scan.risk_score ?? 0;
 
-        return el("tr", null, [
-          el("td", null, [
-            el("span", {
-              class: "mono text-xs",
-              style: { fontWeight: "700", color: "var(--text-primary)" },
-              text: `#${shortId(scan.id)}`,
-              title: scan.id,
-            }),
-          ]),
-          el("td", null, [
-            el("span", {
-              style: { fontWeight: "600", color: "var(--text-primary)" },
-              text: projectName,
-            }),
-          ]),
-          el("td", null, [
-            el("span", {
-              class: "badge badge-stack",
-              text: String(scan.profile || "standard").toUpperCase(),
-            }),
-          ]),
-          el("td", null, [statusBadge(statusLower)]),
-          el("td", null, [
-            el("span", {
-              class: `risk-pill ${riskColorClass(isActive ? null : riskVal)}`,
-              text: isActive ? `${scan.progress_pct ?? 0}%` : `${riskVal}/100`,
-            }),
-          ]),
-          el("td", null, [buildFindingsSummaryBadges(scan.summary)]),
-          el("td", null, [
-            el("span", {
-              class: "text-xs text-muted",
-              text: formatDate(scan.created_at || scan.started_at),
-            }),
-          ]),
-          el("td", null, [
-            el("div", { class: "row", style: { gap: "6px" } }, [
-              isActive
-                ? el("button", {
-                    type: "button",
-                    class: "btn btn-primary btn-sm",
-                    text: "Live",
-                    on: {
-                      click: () => navigate("live", { scanId: scan.id, initialScan: scan }),
-                    },
-                  })
-                : el("button", {
-                    type: "button",
-                    class: "btn btn-secondary btn-sm",
-                    text: "Results",
-                    on: {
-                      click: () => navigate("findings", { scanId: scan.id }),
-                    },
-                  }),
+        const openScanDirect = () => {
+          if (isActive) {
+            navigate("live", { scanId: scan.id, initialScan: scan });
+          } else {
+            navigate("findings", { scanId: scan.id });
+          }
+        };
+
+        return el(
+          "tr",
+          {
+            class: "clickable-row",
+            title: isActive
+              ? `Click to open Live Scan #${shortId(scan.id)}`
+              : `Click to open Findings for Scan #${shortId(scan.id)}`,
+            on: {
+              click: (e) => {
+                if (e.target.closest("button")) return;
+                openScanDirect();
+              },
+            },
+          },
+          [
+            el("td", null, [
+              el("span", {
+                class: "mono text-xs",
+                style: { fontWeight: "700", color: "var(--text-primary)" },
+                text: `#${shortId(scan.id)}`,
+                title: scan.id,
+              }),
             ]),
-          ]),
-        ]);
+            el("td", null, [
+              el("span", {
+                style: { fontWeight: "600", color: "var(--text-primary)" },
+                text: projectName,
+              }),
+            ]),
+            el("td", null, [
+              el("span", {
+                class: "badge badge-stack",
+                text: String(scan.profile || "standard").toUpperCase(),
+              }),
+            ]),
+            el("td", null, [statusBadge(statusLower)]),
+            el("td", null, [
+              el("span", {
+                class: `risk-pill ${riskColorClass(isActive ? null : riskVal)}`,
+                text: isActive ? `${scan.progress_pct ?? 0}%` : `${riskVal}/100`,
+              }),
+            ]),
+            el("td", null, [buildFindingsSummaryBadges(scan.summary)]),
+            el("td", null, [
+              el("span", {
+                class: "text-xs text-muted",
+                text: formatDate(scan.created_at || scan.started_at),
+              }),
+            ]),
+            el("td", null, [
+              el("div", { class: "row", style: { gap: "6px", flexWrap: "nowrap" } }, [
+                isActive
+                  ? el("button", {
+                      type: "button",
+                      class: "btn btn-primary btn-sm",
+                      text: "Live",
+                      on: {
+                        click: (e) => {
+                          e.stopPropagation();
+                          navigate("live", { scanId: scan.id, initialScan: scan });
+                        },
+                      },
+                    })
+                  : el("button", {
+                      type: "button",
+                      class: "btn btn-secondary btn-sm",
+                      text: "Results",
+                      on: {
+                        click: (e) => {
+                          e.stopPropagation();
+                          navigate("findings", { scanId: scan.id });
+                        },
+                      },
+                    }),
+                el("button", {
+                  type: "button",
+                  class: "btn btn-ghost btn-sm",
+                  text: "Edit",
+                  "aria-label": `Edit scan ${shortId(scan.id)}`,
+                  on: {
+                    click: (e) => {
+                      e.stopPropagation();
+                      openEditScanModal(scan);
+                    },
+                  },
+                }),
+                el("button", {
+                  type: "button",
+                  class: "btn btn-danger btn-sm",
+                  text: "Delete",
+                  disabled: statusLower === "crawling" || statusLower === "scanning",
+                  title:
+                    statusLower === "crawling" || statusLower === "scanning"
+                      ? "Cancel the running scan before deleting"
+                      : `Delete scan #${shortId(scan.id)}`,
+                  "aria-label": `Delete scan ${shortId(scan.id)}`,
+                  on: {
+                    click: (e) => {
+                      e.stopPropagation();
+                      handleDeleteScan(scan);
+                    },
+                  },
+                }),
+              ]),
+            ]),
+          ],
+        );
       }),
     );
 
@@ -2049,10 +2404,42 @@ function bindGlobalEvents() {
     });
   }
 
-  // Escape key closes Project Modal or mobile sidebar
+  // Edit Scan Modal controls
+  if (dom.closeEditScanModalBtn) {
+    dom.closeEditScanModalBtn.addEventListener("click", () => closeEditScanModal());
+  }
+  if (dom.cancelEditScanModalBtn) {
+    dom.cancelEditScanModalBtn.addEventListener("click", () => closeEditScanModal());
+  }
+  if (dom.editScanRerunBtn) {
+    dom.editScanRerunBtn.addEventListener("click", () => {
+      if (!editingScan) return;
+      const targetScan = editingScan;
+      prefillLauncherFromScan(targetScan);
+      closeEditScanModal();
+      navigate("launcher", { projectId: targetScan.project_id });
+    });
+  }
+  if (dom.editScanModal) {
+    dom.editScanModal.addEventListener("click", (event) => {
+      if (event.target === dom.editScanModal) {
+        closeEditScanModal();
+      }
+    });
+  }
+  if (dom.editScanForm) {
+    dom.editScanForm.addEventListener("submit", (event) => {
+      handleEditScanFormSubmit(event);
+    });
+  }
+
+  // Escape key closes active modals or mobile sidebar
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
-    if (isProjectModalOpen) {
+    if (isEditScanModalOpen) {
+      event.preventDefault();
+      closeEditScanModal();
+    } else if (isProjectModalOpen) {
       event.preventDefault();
       closeProjectModal();
     } else if (dom.sidebar?.classList.contains("open")) {
