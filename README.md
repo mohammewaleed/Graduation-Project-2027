@@ -124,7 +124,7 @@ python testbench/vulnbench/app.py --host 127.0.0.1 --port 5050
 ```
 
 
-<summary><strong>🐳 Option 2 · Docker Compose (Scanner + Optional Testbench + Optional PostgreSQL 16)</strong></summary>
+### 🐳 Option 2 · Docker Compose (Scanner + Optional Testbench + Optional PostgreSQL 16)</strong></summary>
 
 > **Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Compose v2; **WSL 2** enabled on Windows) · Free port `8000`
 
