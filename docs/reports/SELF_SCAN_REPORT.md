@@ -163,6 +163,6 @@ Then open **http://127.0.0.1:8000**, create a project targeting `http://127.0.0.
 
 ## Related Documentation
 
-- [README.md](../README.md) — Project overview, 3-minute Quick Start, 17-check catalog, and extensibility guide
+- [README.md](../../README.md) — Project overview, 3-minute Quick Start, 17-check catalog, and extensibility guide
 - [docs/TESTBENCH_RESULTS.md](TESTBENCH_RESULTS.md) — Phase 6 empirical `VulnBench` precision/recall report & OWASP ZAP DX comparison
-- [docs/SAD.md](SAD.md) — Formal Software Architecture Document (Chapters 1–6 & 19 Mermaid/PNG figures)
+- [docs/SAD.md](../SAD.md) — Formal Software Architecture Document (Chapters 1–6 & 19 Mermaid/PNG figures)

@@ -97,7 +97,7 @@ A fast, zero-config local web vulnerability scanner built for developers and stu
 
 ```bash
 pytest backend/tests -v
-python scripts/evaluate.py --auto-start-vulnbench --benchmark-all-profiles --write-report docs/TESTBENCH_RESULTS.md
+python scripts/evaluate.py --auto-start-vulnbench --benchmark-all-profiles --write-report docs/reports/TESTBENCH_RESULTS.md
 ```
 
 | Profile | Checks | Precision | Recall | F1-Score | Clean FPs | Duration |
@@ -121,9 +121,9 @@ python scripts/evaluate.py --auto-start-vulnbench --benchmark-all-profiles --wri
 
 ## Documentation
 
-- **Architecture Book:** [SAD.md](docs/SAD.md) · [Full PDF](docs/SAD_Book.pdf) · [Semester 1 PDF](docs/semester_1/SAD_Semester1_Book.pdf) · [Semester 2 PDF](docs/semester_2/SAD_Semester2_Book.pdf)
-- **Defense Presentation:** [Full Defense — Interactive HTML5 (SVG Zoom/Pan)](docs/presentations/Full-project/Full_Graduation_Defense.html) · [PowerPoint (PPTX)](docs/presentations/Full-project/Full_Graduation_Defense.pptx) · [Widescreen PDF](docs/presentations/Full-project/Full_Graduation_Defense.pdf)
-- **Validation Reports:** [VulnBench Accuracy Results](docs/TESTBENCH_RESULTS.md) · [Self-Scan Hardening Audit](docs/SELF_SCAN_REPORT.md)
+- **Architecture Book:** [SAD.md](docs/SAD.md) · [Full PDF](docs/books/pdf/SAD_Book.pdf) · [Semester 1 PDF](docs/books/pdf/SAD_Semester1_Book.pdf) · [Semester 2 PDF](docs/books/pdf/SAD_Semester2_Book.pdf)
+- **Defense Presentation:** [Full Defense — Interactive HTML5 (SVG Zoom/Pan)](docs/presentations/html/Full_Graduation_Defense.html) · [PowerPoint (PPTX)](docs/presentations/pptx/Full_Graduation_Defense.pptx) · [Widescreen PDF](docs/presentations/pdf/Full_Graduation_Defense.pdf)
+- **Validation Reports:** [VulnBench Accuracy Results](docs/reports/TESTBENCH_RESULTS.md) · [Self-Scan Hardening Audit](docs/reports/SELF_SCAN_REPORT.md)
 
 ---
 

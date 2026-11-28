@@ -13,9 +13,9 @@ The relational database schema comprises four core entities—`PROJECTS`, `SCANS
 - **Third Normal Form (3NF):** Non-key attributes depend exclusively on their owning entity's primary key with zero transitive dependencies across entities: project metadata resides solely on `PROJECTS`, scan execution telemetry on `SCANS`, crawled attack surface metadata on `ENDPOINTS`, and vulnerability detections plus triage states on `FINDINGS`.
 - **Controlled Materialized Rollups on `SCANS`:** The summary metrics `risk_score`, `endpoints_found`, and `critical_count` through `info_count` on `SCANS` are explicitly documented derived rollups recalculated atomically inside the same database transaction upon scan completion, cancellation, or finding triage updates. This design preserves strict consistency while enabling O(1) dashboard loading and historical trend rendering.
 
-![Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram](../diagrams/images/15_erd_3nf.png)
+![Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram](../diagrams/png/15_erd_3nf.png)
 
-*Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram (Source: [15_erd_3nf.mmd](../diagrams/15_erd_3nf.mmd)).*
+*Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram (Source: [15_erd_3nf.mmd](../diagrams/mmd/15_erd_3nf.mmd)).*
 
 ### Table 4.1: Entity Relationships and Referential Integrity Rules
 

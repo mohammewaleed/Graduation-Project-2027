@@ -3,9 +3,9 @@
 Build ONE unified 30-Slide Full Graduation Defense Presentation
 (Part 1: Software Architecture Document [SAD] + Part 2: Technical Implementation & Empirical Results v1.0.0)
 in all three formats:
-  1. docs/presentations/Full-project/Full_Graduation_Defense.html  (100% offline single-file HTML5 + interactive fixed-box SVG Zoom & Pan Viewer)
-  2. docs/presentations/Full-project/Full_Graduation_Defense.pptx  (100% valid 16:9 OOXML PowerPoint with all 19 original high-DPI PNGs)
-  3. docs/presentations/Full-project/Full_Graduation_Defense.pdf   (30-page 16:9 widescreen PDF via headless Chrome)
+  1. docs/presentations/html/Full_Graduation_Defense.html  (100% offline single-file HTML5 + interactive fixed-box SVG Zoom & Pan Viewer)
+  2. docs/presentations/pptx/Full_Graduation_Defense.pptx  (100% valid 16:9 OOXML PowerPoint with all 19 original high-DPI PNGs)
+  3. docs/presentations/pdf/Full_Graduation_Defense.pdf    (30-page 16:9 widescreen PDF via headless Chrome)
 
 Usage:
     py -3.12 scripts/build_full_defense.py
@@ -27,12 +27,13 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = ROOT / "docs"
-IMG_DIR = DOCS_DIR / "diagrams" / "images"
-PRES_DIR = DOCS_DIR / "presentations" / "Full-project"
+SVG_DIR = DOCS_DIR / "diagrams" / "svg"
+PNG_DIR = DOCS_DIR / "diagrams" / "png"
+PRES_DIR = DOCS_DIR / "presentations"
 
-OUT_HTML = PRES_DIR / "Full_Graduation_Defense.html"
-OUT_PDF = PRES_DIR / "Full_Graduation_Defense.pdf"
-OUT_PPTX = PRES_DIR / "Full_Graduation_Defense.pptx"
+OUT_HTML = PRES_DIR / "html" / "Full_Graduation_Defense.html"
+OUT_PDF = PRES_DIR / "pdf" / "Full_Graduation_Defense.pdf"
+OUT_PPTX = PRES_DIR / "pptx" / "Full_Graduation_Defense.pptx"
 
 CHROME_PATH = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 
@@ -488,7 +489,7 @@ def load_namespaced_svg(svg_path: Path, prefix: str) -> str:
 def load_all_svgs() -> dict[str, str]:
     out: dict[str, str] = {}
     for key, (stem, _, _) in FIGURES.items():
-        out[key] = load_namespaced_svg(IMG_DIR / f"{stem}.svg", key)
+        out[key] = load_namespaced_svg(SVG_DIR / f"{stem}.svg", key)
     return out
 
 
@@ -3700,7 +3701,7 @@ def write_pptx(out_path: Path) -> None:
     img_info: dict[str, tuple[str, int, int]] = {}
     media_files: list[tuple[str, bytes]] = []
     for idx, (key, (stem, _, _)) in enumerate(FIGURES.items(), start=1):
-        png_path = IMG_DIR / f"{stem}.png"
+        png_path = PNG_DIR / f"{stem}.png"
         if not png_path.exists():
             raise FileNotFoundError(f"Original PNG missing: {png_path}")
         with Image.open(png_path) as im:
@@ -3941,7 +3942,7 @@ def validate_outputs() -> None:
 def main() -> int:
     PRES_DIR.mkdir(parents=True, exist_ok=True)
     svgs = load_all_svgs()
-    print(f"[OK] Loaded & namespaced {len(svgs)}/19 original SVGs from {IMG_DIR}")
+    print(f"[OK] Loaded & namespaced {len(svgs)}/19 original SVGs from {SVG_DIR}")
 
     OUT_HTML.write_text(build_html(svgs), encoding="utf-8")
     print(f"[OK] Wrote {OUT_HTML} ({OUT_HTML.stat().st_size:,} bytes)")

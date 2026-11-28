@@ -341,12 +341,12 @@ def load_semester_content(
 
         blocks = parse_markdown_blocks(raw_md, ch_path.parent, fig_counter)
 
-        # Point FigureBlock image paths to the copied semester images/ directory
+        # Point FigureBlock image paths to docs/diagrams/png/
         for blk in blocks:
             if isinstance(blk, FigureBlock):
-                sem_img = semester_dir / "images" / blk.image_path.name
-                if sem_img.exists():
-                    blk.image_path = sem_img
+                diag_img = IMAGES_DIR / blk.image_path.name
+                if diag_img.exists():
+                    blk.image_path = diag_img
 
         ch_title = f"Chapter {ch_num}"
         for blk in blocks:
@@ -372,7 +372,7 @@ def load_semester_content(
                         title=short_title,
                         chapter_label=f"Chapter {ch_num}",
                         image_path=blk.image_path,
-                        mmd_rel=f"../diagrams/{blk.image_path.stem}.mmd",
+                        mmd_rel=f"../../diagrams/mmd/{blk.image_path.stem}.mmd",
                     )
                 )
 
@@ -405,8 +405,9 @@ def load_semester_content(
 
 
 def rewrite_chapter_for_semester_md(raw_md: str) -> str:
-    """Rewrite ../diagrams/images/ to images/ while keeping ../diagrams/*.mmd valid from docs/semester_N/."""
-    text = raw_md.replace("../diagrams/images/", "images/")
+    """Rewrite ../diagrams/ links to ../../diagrams/ for docs/books/md/."""
+    text = raw_md.replace("../diagrams/png/", "../../diagrams/png/")
+    text = text.replace("../diagrams/mmd/", "../../diagrams/mmd/")
     return text.strip()
 
 
@@ -445,7 +446,7 @@ def build_semester_markdown(
     parts.append("| :---: | :--- | :---: | :--- | :--- |")
     for fig in figures:
         clean_title = re.sub(r"^Figure\s+\d+\s*:\s*", "", fig.title, flags=re.IGNORECASE)
-        img_rel = f"images/{fig.image_path.name}"
+        img_rel = f"../../diagrams/png/{fig.image_path.name}"
         mmd_name = Path(fig.mmd_rel).name
         parts.append(
             f"| **Figure {fig.fig_num}** | {clean_title} | {fig.chapter_label} | "
@@ -650,26 +651,24 @@ def build_semester_print_html(
 
 def build_semester_package(cfg: SemesterConfig, references_md: str) -> None:
     expected_figs = len(cfg.figure_numbers)
-    sem_dir = DOCS_DIR / cfg.slug
-    sem_images_dir = sem_dir / "images"
-    sem_dir.mkdir(parents=True, exist_ok=True)
+    books_dir = DOCS_DIR / "books"
+    md_dir = books_dir / "md"
+    docx_dir = books_dir / "docx"
+    pdf_dir = books_dir / "pdf"
+    for d in (md_dir, docx_dir, pdf_dir):
+        d.mkdir(parents=True, exist_ok=True)
 
-    # 1. Copy PNG + SVG figures
-    copied_pngs = copy_semester_images(cfg, sem_images_dir)
-    if len(copied_pngs) != expected_figs:
-        raise ValueError(f"Expected {expected_figs} PNGs in {sem_images_dir}, got {len(copied_pngs)}")
-
-    # 2. Load semester chapters + back matter
+    # 1. Load semester chapters + back matter
     chapters, toc, figures, back_md, back_blocks = load_semester_content(
-        cfg, sem_dir, references_md
+        cfg, md_dir, references_md
     )
     if len(figures) != expected_figs:
         raise ValueError(
             f"Expected {expected_figs} parsed figures for {cfg.slug}, found {len(figures)}"
         )
 
-    # 3. Write Markdown book
-    md_path = sem_dir / f"{cfg.file_stem}.md"
+    # 2. Write Markdown book
+    md_path = md_dir / f"{cfg.file_stem}.md"
     md_text = build_semester_markdown(cfg, chapters, toc, figures, back_md)
     md_path.write_text(md_text, encoding="utf-8")
 
@@ -679,17 +678,17 @@ def build_semester_package(cfg: SemesterConfig, references_md: str) -> None:
         lnk
         for lnk in links
         if not lnk.startswith(("http://", "https://"))
-        and not (sem_dir / lnk).resolve().exists()
+        and not (md_dir / lnk).resolve().exists()
     ]
     if broken:
         raise ValueError(f"Broken relative links in {md_path}: {broken}")
     print(
         f"[OK] {cfg.slug}: Wrote {md_path} ({md_path.stat().st_size:,} bytes, "
-        f"{len(copied_pngs)} PNG + {len(copied_pngs)} SVG copied, {len(links)}/{len(links)} links valid)"
+        f"{len(links)}/{len(links)} links valid)"
     )
 
-    # 4. Write & validate OOXML .docx
-    docx_path = sem_dir / f"{cfg.file_stem}.docx"
+    # 3. Write & validate OOXML .docx
+    docx_path = docx_dir / f"{cfg.file_stem}.docx"
     docx_builder = SemesterDocxBuilder(cfg)
     docx_builder.add_semester_cover_page()
     docx_builder.add_front_matter(toc, figures)
@@ -704,8 +703,8 @@ def build_semester_package(cfg: SemesterConfig, references_md: str) -> None:
         f"{docx_stats['media_pngs']}/{expected_figs} PNGs embedded, {docx_stats['drawing_embeds']} drawings)"
     )
 
-    # 5. Render & validate offline A4 .pdf
-    pdf_path = sem_dir / f"{cfg.file_stem}.pdf"
+    # 4. Render & validate offline A4 .pdf
+    pdf_path = pdf_dir / f"{cfg.file_stem}.pdf"
     html_doc, html_img_count = build_semester_print_html(
         cfg, chapters, toc, figures, back_blocks
     )

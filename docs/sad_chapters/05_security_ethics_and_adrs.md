@@ -45,9 +45,9 @@ To satisfy `FR-01`, `FR-02`, and `NFR-03`, all scope validation and anti-abuse r
 
 Figure 16 illustrates the end-to-end decision pipeline executed inside `GuardedHttpClient` and `ScopeGuardrail` for every outbound HTTP request candidate.
 
-![Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow](../diagrams/images/16_scope_guardrail_flow.png)
+![Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow](../diagrams/png/16_scope_guardrail_flow.png)
 
-*Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow (Mermaid source: [16_scope_guardrail_flow.mmd](../diagrams/16_scope_guardrail_flow.mmd)).*
+*Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow (Mermaid source: [16_scope_guardrail_flow.mmd](../diagrams/mmd/16_scope_guardrail_flow.mmd)).*
 
 ### 5.2.3 Summary of Guardrail Enforcement Gates
 

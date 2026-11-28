@@ -46,9 +46,9 @@ Table 2.2 establishes nine measurable non-functional requirements (`NFR-01` thro
 
 Figure 3 models the system boundary, external actors (`Student / Web Developer` and `Team Lead / Capstone Instructor`), six core use cases (`UC-01` through `UC-06`), and UML `«include»` and `«extend»` behavioral relationships.
 
-![Figure 3: System Use Case Diagram](../diagrams/images/03_use_case_diagram.png)
+![Figure 3: System Use Case Diagram](../diagrams/png/03_use_case_diagram.png)
 
-*Figure 3: System Use Case Diagram depicting system actors, primary use cases (UC-01 through UC-06), mandatory include dependencies, and optional authentication and cancellation extensions. Diagram source: [03_use_case_diagram.mmd](../diagrams/03_use_case_diagram.mmd).*
+*Figure 3: System Use Case Diagram depicting system actors, primary use cases (UC-01 through UC-06), mandatory include dependencies, and optional authentication and cancellation extensions. Diagram source: [03_use_case_diagram.mmd](../diagrams/mmd/03_use_case_diagram.mmd).*
 
 ---
 

@@ -31,7 +31,8 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 # ---------------------------------------------------------------------------
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent
 DIAGRAMS_DIR = ROOT_DIR / "docs" / "diagrams"
-IMAGES_DIR = DIAGRAMS_DIR / "images"
+SVG_DIR = DIAGRAMS_DIR / "svg"
+PNG_DIR = DIAGRAMS_DIR / "png"
 
 FONT_SANS = "Segoe UI, Arial, Helvetica, sans-serif"
 FONT_MONO = "Consolas, 'Courier New', monospace"
@@ -3164,7 +3165,8 @@ def _render_fallback_pillow(stem: str, png_path: pathlib.Path, vb_w: float, vb_h
 
 
 def main() -> int:
-    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    SVG_DIR.mkdir(parents=True, exist_ok=True)
+    PNG_DIR.mkdir(parents=True, exist_ok=True)
     browser = _find_browser()
     if browser:
         print(f"[render_diagrams] Using headless browser: {browser}")
@@ -3182,8 +3184,8 @@ def main() -> int:
         tmp_dir = pathlib.Path(tmp_str)
         for stem, renderer in specs:
             svg_text, vb_w, vb_h = renderer()
-            svg_path = IMAGES_DIR / f"{stem}.svg"
-            png_path = IMAGES_DIR / f"{stem}.png"
+            svg_path = SVG_DIR / f"{stem}.svg"
+            png_path = PNG_DIR / f"{stem}.png"
             svg_path.write_text(svg_text, encoding="utf-8")
 
             ok = False
@@ -3206,7 +3208,7 @@ def main() -> int:
     if failures:
         print(f"[render_diagrams] WARNING: {len(failures)} PNGs below 15KB: {failures}")
         return 1
-    print(f"[render_diagrams] Successfully generated all {len(DIAGRAM_SPECS)} SVG + PNG diagram pairs in {IMAGES_DIR}")
+    print(f"[render_diagrams] Successfully generated all {len(DIAGRAM_SPECS)} SVG + PNG diagram pairs in {SVG_DIR} and {PNG_DIR}")
     return 0
 
 

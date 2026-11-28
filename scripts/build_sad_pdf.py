@@ -56,7 +56,7 @@ from build_sad_docx import (  # noqa: E402
     strip_md_inline,
 )
 
-OUTPUT_PDF_PATH = DOCS_DIR / "SAD_Book.pdf"
+OUTPUT_PDF_PATH = DOCS_DIR / "books" / "pdf" / "SAD_Book.pdf"
 
 BROWSER_CANDIDATES: list[Path] = [
     Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe"),

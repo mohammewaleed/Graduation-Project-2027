@@ -61,10 +61,10 @@ This Semester 2 Graduation Project Book presents the detailed relational data mo
 
 | Figure | Title | Chapter | Image Asset | Mermaid Source |
 | :---: | :--- | :---: | :--- | :--- |
-| **Figure 15** | Third Normal Form (3NF) Entity-Relationship Diagram | Chapter 4 | [15_erd_3nf.png](images/15_erd_3nf.png) | [15_erd_3nf.mmd](../diagrams/15_erd_3nf.mmd) |
-| **Figure 16** | Pre-Request Scope Guardrail and Safety Decision Flow | Chapter 5 | [16_scope_guardrail_flow.png](images/16_scope_guardrail_flow.png) | [16_scope_guardrail_flow.mmd](../diagrams/16_scope_guardrail_flow.mmd) |
-| **Figure 17** | Target Detection Accuracy Benchmark Profile Across OWASP Categories | Chapter 6 | [17_accuracy_benchmark_chart.png](images/17_accuracy_benchmark_chart.png) | [17_accuracy_benchmark_chart.mmd](../diagrams/17_accuracy_benchmark_chart.mmd) |
-| **Figure 18** | Target Crawler Coverage and Latency Profile Across Scan Modes | Chapter 6 | [18_coverage_latency_chart.png](images/18_coverage_latency_chart.png) | [18_coverage_latency_chart.mmd](../diagrams/18_coverage_latency_chart.mmd) |
+| **Figure 15** | Third Normal Form (3NF) Entity-Relationship Diagram | Chapter 4 | [15_erd_3nf.png](../../diagrams/png/15_erd_3nf.png) | [15_erd_3nf.mmd](../../diagrams/mmd/15_erd_3nf.mmd) |
+| **Figure 16** | Pre-Request Scope Guardrail and Safety Decision Flow | Chapter 5 | [16_scope_guardrail_flow.png](../../diagrams/png/16_scope_guardrail_flow.png) | [16_scope_guardrail_flow.mmd](../../diagrams/mmd/16_scope_guardrail_flow.mmd) |
+| **Figure 17** | Target Detection Accuracy Benchmark Profile Across OWASP Categories | Chapter 6 | [17_accuracy_benchmark_chart.png](../../diagrams/png/17_accuracy_benchmark_chart.png) | [17_accuracy_benchmark_chart.mmd](../../diagrams/mmd/17_accuracy_benchmark_chart.mmd) |
+| **Figure 18** | Target Crawler Coverage and Latency Profile Across Scan Modes | Chapter 6 | [18_coverage_latency_chart.png](../../diagrams/png/18_coverage_latency_chart.png) | [18_coverage_latency_chart.mmd](../../diagrams/mmd/18_coverage_latency_chart.mmd) |
 
 ---
 
@@ -83,9 +83,9 @@ The relational database schema comprises four core entities—`PROJECTS`, `SCANS
 - **Third Normal Form (3NF):** Non-key attributes depend exclusively on their owning entity's primary key with zero transitive dependencies across entities: project metadata resides solely on `PROJECTS`, scan execution telemetry on `SCANS`, crawled attack surface metadata on `ENDPOINTS`, and vulnerability detections plus triage states on `FINDINGS`.
 - **Controlled Materialized Rollups on `SCANS`:** The summary metrics `risk_score`, `endpoints_found`, and `critical_count` through `info_count` on `SCANS` are explicitly documented derived rollups recalculated atomically inside the same database transaction upon scan completion, cancellation, or finding triage updates. This design preserves strict consistency while enabling O(1) dashboard loading and historical trend rendering.
 
-![Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram](images/15_erd_3nf.png)
+![Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram](../../diagrams/png/15_erd_3nf.png)
 
-*Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram (Source: [15_erd_3nf.mmd](../diagrams/15_erd_3nf.mmd)).*
+*Figure 15: Third Normal Form (3NF) Entity-Relationship Diagram (Source: [15_erd_3nf.mmd](../../diagrams/mmd/15_erd_3nf.mmd)).*
 
 ### Table 4.1: Entity Relationships and Referential Integrity Rules
 
@@ -447,9 +447,9 @@ To satisfy `FR-01`, `FR-02`, and `NFR-03`, all scope validation and anti-abuse r
 
 Figure 16 illustrates the end-to-end decision pipeline executed inside `GuardedHttpClient` and `ScopeGuardrail` for every outbound HTTP request candidate.
 
-![Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow](images/16_scope_guardrail_flow.png)
+![Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow](../../diagrams/png/16_scope_guardrail_flow.png)
 
-*Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow (Mermaid source: [16_scope_guardrail_flow.mmd](../diagrams/16_scope_guardrail_flow.mmd)).*
+*Figure 16: Pre-Request Scope Guardrail and Safety Decision Flow (Mermaid source: [16_scope_guardrail_flow.mmd](../../diagrams/mmd/16_scope_guardrail_flow.mmd)).*
 
 ### 5.2.3 Summary of Guardrail Enforcement Gates
 
@@ -813,9 +813,9 @@ Matching on all four attributes prevents inflated accuracy scores where a check 
 
 Figure 17 presents the pre-Phase 6 target Recall (bars) and target Precision (line) baselines across the six covered OWASP Top 10 (2021) categories [1] on `VulnBench`.
 
-![Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories](images/17_accuracy_benchmark_chart.png)
+![Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories](../../diagrams/png/17_accuracy_benchmark_chart.png)
 
-*Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories — Pre-Phase 6 Target Baseline (Mermaid source: [17_accuracy_benchmark_chart.mmd](../diagrams/17_accuracy_benchmark_chart.mmd)).*
+*Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories — Pre-Phase 6 Target Baseline (Mermaid source: [17_accuracy_benchmark_chart.mmd](../../diagrams/mmd/17_accuracy_benchmark_chart.mmd)).*
 
 #### Target Accuracy Breakdown by OWASP Category (17 Curated Checks)
 
@@ -835,9 +835,9 @@ Figure 17 presents the pre-Phase 6 target Recall (bars) and target Precision (li
 
 Figure 18 defines the target SLA profile for crawler route coverage (bars, %) and scan duration ceiling (line, seconds) across the `Quick`, `Standard`, and `Deep` profiles on `VulnBench`, alongside expected `Standard` profile behavior on `DVWA` and `OWASP Juice Shop`.
 
-![Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes](images/18_coverage_latency_chart.png)
+![Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes](../../diagrams/png/18_coverage_latency_chart.png)
 
-*Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes — Pre-Phase 6 Target SLA Profile (Mermaid source: [18_coverage_latency_chart.mmd](../diagrams/18_coverage_latency_chart.mmd)).*
+*Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes — Pre-Phase 6 Target SLA Profile (Mermaid source: [18_coverage_latency_chart.mmd](../../diagrams/mmd/18_coverage_latency_chart.mmd)).*
 
 #### Scan Profile Configuration and Target SLA Matrix
 

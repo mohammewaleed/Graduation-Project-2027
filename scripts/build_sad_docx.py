@@ -35,10 +35,11 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = REPO_ROOT / "docs"
 CHAPTERS_DIR = DOCS_DIR / "sad_chapters"
 DIAGRAMS_DIR = DOCS_DIR / "diagrams"
-IMAGES_DIR = DIAGRAMS_DIR / "images"
+IMAGES_DIR = DIAGRAMS_DIR / "png"
+BOOKS_DIR = DOCS_DIR / "books"
 
-OUTPUT_MD_PATH = DOCS_DIR / "SAD_Book.md"
-OUTPUT_DOCX_PATH = DOCS_DIR / "SAD_Book.docx"
+OUTPUT_MD_PATH = BOOKS_DIR / "md" / "SAD_Book.md"
+OUTPUT_DOCX_PATH = BOOKS_DIR / "docx" / "SAD_Book.docx"
 
 BOOK_HEADER = "GRADUATION PROJECT BOOK – SYSTEM ANALYSIS AND DESIGN"
 BOOK_TITLE = "Developing a Lightweight OWASP Top 10 Vulnerability Scanner"
@@ -338,7 +339,7 @@ def clean_caption_for_print(raw_caption: str, fallback_alt: str) -> tuple[str, s
     mmd_rel = ""
     if mmd_match:
         mmd_name = Path(mmd_match.group(1)).name
-        mmd_rel = f"diagrams/{mmd_name}"
+        mmd_rel = f"../../diagrams/mmd/{mmd_name}"
 
     text = raw_caption.strip()
     m = ITALIC_CAPTION_RE.match(text)
@@ -651,9 +652,9 @@ def load_all_chapters() -> tuple[list[ChapterData], list[TocItem], list[FigureEn
 
 
 def rewrite_chapter_links_for_book_md(raw_md: str) -> str:
-    """Rewrite relative ../diagrams/ links to diagrams/ for docs/SAD_Book.md."""
-    text = raw_md.replace("../diagrams/images/", "diagrams/images/")
-    text = text.replace("../diagrams/", "diagrams/")
+    """Rewrite relative ../diagrams/ links to ../../diagrams/ for docs/books/md/SAD_Book.md."""
+    text = raw_md.replace("../diagrams/png/", "../../diagrams/png/")
+    text = text.replace("../diagrams/mmd/", "../../diagrams/mmd/")
     return text.strip()
 
 
@@ -699,7 +700,7 @@ def build_sad_book_md(
     parts.append("| Figure | Title | Chapter | Image Asset | Mermaid Source |")
     parts.append("| :---: | :--- | :---: | :--- | :--- |")
     for fig in figures:
-        img_rel = f"diagrams/images/{fig.image_path.name}"
+        img_rel = f"../../diagrams/png/{fig.image_path.name}"
         clean_title = re.sub(r"^Figure\s+\d+\s*:\s*", "", fig.title, flags=re.IGNORECASE)
         parts.append(
             f"| **Figure {fig.fig_num}** | {clean_title} | {fig.chapter_label} | "

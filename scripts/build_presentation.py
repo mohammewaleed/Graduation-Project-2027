@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Build the 11-slide Supervisor Progress Briefing for Dr. Samar in three formats:
-  1. docs/presentations/Semester1_Progress_Defense.html  (100% offline 16:9 interactive slideshow + print styles)
-  2. docs/presentations/Semester1_Progress_Defense.pdf   (11-page 16:9 widescreen PDF via headless Chrome)
-  3. docs/presentations/Semester1_Progress_Defense.pptx  (100% valid 16:9 OOXML PowerPoint via stdlib zipfile + XML)
+  1. docs/presentations/html/Semester1_Progress_Defense.html  (100% offline 16:9 interactive slideshow + print styles)
+  2. docs/presentations/pdf/Semester1_Progress_Defense.pdf    (11-page 16:9 widescreen PDF via headless Chrome)
+  3. docs/presentations/pptx/Semester1_Progress_Defense.pptx  (100% valid 16:9 OOXML PowerPoint via stdlib zipfile + XML)
 
 Usage:
     py -3.12 scripts/build_presentation.py
@@ -25,12 +25,12 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = ROOT / "docs"
-IMG_DIR = DOCS_DIR / "diagrams" / "images"
+IMG_DIR = DOCS_DIR / "diagrams" / "png"
 PRES_DIR = DOCS_DIR / "presentations"
 
-OUT_HTML = PRES_DIR / "Semester1_Progress_Defense.html"
-OUT_PDF = PRES_DIR / "Semester1_Progress_Defense.pdf"
-OUT_PPTX = PRES_DIR / "Semester1_Progress_Defense.pptx"
+OUT_HTML = PRES_DIR / "html" / "Semester1_Progress_Defense.html"
+OUT_PDF = PRES_DIR / "pdf" / "Semester1_Progress_Defense.pdf"
+OUT_PPTX = PRES_DIR / "pptx" / "Semester1_Progress_Defense.pptx"
 
 CHROME_PATH = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
 

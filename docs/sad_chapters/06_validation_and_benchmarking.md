@@ -153,9 +153,9 @@ Matching on all four attributes prevents inflated accuracy scores where a check 
 
 Figure 17 presents the pre-Phase 6 target Recall (bars) and target Precision (line) baselines across the six covered OWASP Top 10 (2021) categories [1] on `VulnBench`.
 
-![Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories](../diagrams/images/17_accuracy_benchmark_chart.png)
+![Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories](../diagrams/png/17_accuracy_benchmark_chart.png)
 
-*Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories — Pre-Phase 6 Target Baseline (Mermaid source: [17_accuracy_benchmark_chart.mmd](../diagrams/17_accuracy_benchmark_chart.mmd)).*
+*Figure 17: Target Detection Accuracy Benchmark Profile Across OWASP Categories — Pre-Phase 6 Target Baseline (Mermaid source: [17_accuracy_benchmark_chart.mmd](../diagrams/mmd/17_accuracy_benchmark_chart.mmd)).*
 
 #### Target Accuracy Breakdown by OWASP Category (17 Curated Checks)
 
@@ -175,9 +175,9 @@ Figure 17 presents the pre-Phase 6 target Recall (bars) and target Precision (li
 
 Figure 18 defines the target SLA profile for crawler route coverage (bars, %) and scan duration ceiling (line, seconds) across the `Quick`, `Standard`, and `Deep` profiles on `VulnBench`, alongside expected `Standard` profile behavior on `DVWA` and `OWASP Juice Shop`.
 
-![Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes](../diagrams/images/18_coverage_latency_chart.png)
+![Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes](../diagrams/png/18_coverage_latency_chart.png)
 
-*Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes — Pre-Phase 6 Target SLA Profile (Mermaid source: [18_coverage_latency_chart.mmd](../diagrams/18_coverage_latency_chart.mmd)).*
+*Figure 18: Target Crawler Coverage and Latency Profile Across Scan Modes — Pre-Phase 6 Target SLA Profile (Mermaid source: [18_coverage_latency_chart.mmd](../diagrams/mmd/18_coverage_latency_chart.mmd)).*
 
 #### Scan Profile Configuration and Target SLA Matrix
 

@@ -726,7 +726,7 @@ def format_terminal_summary(bundle: dict[str, Any]) -> str:
 
 
 def render_markdown_report(bundle: dict[str, Any]) -> str:
-    """Generate the formal academic ``docs/TESTBENCH_RESULTS.md`` benchmark report."""
+    """Generate the formal academic ``docs/reports/TESTBENCH_RESULTS.md`` benchmark report."""
     profiles_map: dict[str, dict[str, Any]] = bundle["profiles"]
     primary: dict[str, Any] = bundle["primary"]
     gates: dict[str, Any] = primary["gates"]
@@ -953,7 +953,7 @@ def render_markdown_report(bundle: dict[str, Any]) -> str:
     md.append("# Zero-external-server reproducible run across Quick, Standard, and Deep profiles:")
     md.append(
         "python scripts/evaluate.py --auto-start-vulnbench --benchmark-all-profiles "
-        "--write-report docs/TESTBENCH_RESULTS.md --json-out data/eval_results.json"
+        "--write-report docs/reports/TESTBENCH_RESULTS.md --json-out data/eval_results.json"
     )
     md.append("")
     md.append("# Or against a running Docker VulnBench container:")
@@ -1119,7 +1119,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--write-report",
         default="",
-        help="Optional output path to write the Markdown benchmark report (e.g. docs/TESTBENCH_RESULTS.md).",
+        help="Optional output path to write the Markdown benchmark report (e.g. docs/reports/TESTBENCH_RESULTS.md).",
     )
     parser.add_argument(
         "--json-out",

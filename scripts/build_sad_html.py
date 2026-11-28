@@ -31,7 +31,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DOCS_DIR = REPO_ROOT / "docs"
 MASTER_SAD_PATH = DOCS_DIR / "SAD.md"
 CHAPTERS_DIR = DOCS_DIR / "sad_chapters"
-OUTPUT_HTML_PATH = DOCS_DIR / "SAD_Printable.html"
+OUTPUT_HTML_PATH = DOCS_DIR / "books" / "html" / "SAD_Printable.html"
 
 DOCUMENT_META = {
     "kicker": "GRADUATION PROJECT BOOK – SYSTEM ANALYSIS AND DESIGN",

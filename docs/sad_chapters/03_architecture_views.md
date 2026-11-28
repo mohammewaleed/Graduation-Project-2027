@@ -26,9 +26,9 @@ The system implements a **Four-Layer Modular Monolith with a Pure Decoupled Scan
 
 The C4 Level 1 System Context view defines the system boundary between the vulnerability scanner, its human stakeholders, and the external web applications and output artifacts with which it exchanges data. By design, the scanner operates solely within the developer's local workstation or an isolated academic testbench network rather than as an open internet-facing service.
 
-![Figure 4: C4 Level 1 — System Context Diagram](../diagrams/images/04_c4_l1_context.png)
+![Figure 4: C4 Level 1 — System Context Diagram](../diagrams/png/04_c4_l1_context.png)
 
-*Figure 4: C4 Level 1 — System Context Diagram (Source: [04_c4_l1_context.mmd](../diagrams/04_c4_l1_context.mmd)).*
+*Figure 4: C4 Level 1 — System Context Diagram (Source: [04_c4_l1_context.mmd](../diagrams/mmd/04_c4_l1_context.mmd)).*
 
 ### Table 3.2: System Context Actors and External Systems
 
@@ -46,9 +46,9 @@ The C4 Level 1 System Context view defines the system boundary between the vulne
 
 Decomposing the scanner system into logical containers and runtime units demonstrates how the browser presentation tier, FastAPI control plane, in-process background worker pool, pure scanner engine, remediation knowledge base, report generator, and SQLAlchemy persistence layer collaborate within a self-contained footprint.
 
-![Figure 5: C4 Level 2 — Container Architecture Diagram](../diagrams/images/05_c4_l2_containers.png)
+![Figure 5: C4 Level 2 — Container Architecture Diagram](../diagrams/png/05_c4_l2_containers.png)
 
-*Figure 5: C4 Level 2 — Container Architecture Diagram (Source: [05_c4_l2_containers.mmd](../diagrams/05_c4_l2_containers.mmd)).*
+*Figure 5: C4 Level 2 — Container Architecture Diagram (Source: [05_c4_l2_containers.mmd](../diagrams/mmd/05_c4_l2_containers.mmd)).*
 
 ### Table 3.3: Container and Runtime Subsystem Specifications
 
@@ -68,9 +68,9 @@ Decomposing the scanner system into logical containers and runtime units demonst
 
 Inspecting the internal structure of the pure `backend/scanner/` package reveals four cohesive sub-pipelines that convert an authorized target URL into deduplicated, remediation-enriched findings: (1) Orchestration and Safety Controls, (2) Attack Surface Discovery, (3) the 17-Check Plugin Auto-Registry, and (4) Enrichment and Risk Scoring.
 
-![Figure 6: C4 Level 3 — Scanner Engine Component Architecture](../diagrams/images/06_c4_l3_scanner_components.png)
+![Figure 6: C4 Level 3 — Scanner Engine Component Architecture](../diagrams/png/06_c4_l3_scanner_components.png)
 
-*Figure 6: C4 Level 3 — Scanner Engine Component Architecture (Source: [06_c4_l3_scanner_components.mmd](../diagrams/06_c4_l3_scanner_components.mmd)).*
+*Figure 6: C4 Level 3 — Scanner Engine Component Architecture (Source: [06_c4_l3_scanner_components.mmd](../diagrams/mmd/06_c4_l3_scanner_components.mmd)).*
 
 ### Table 3.4: Internal Scanner Engine Component Specifications
 
@@ -96,17 +96,17 @@ Explicit data-flow modeling establishes how untrusted client inputs and untruste
 
 At Level 0, the entire scanner is represented as Process `0.0`, exchanging configuration, live telemetry, and reports with the developer while exchanging scoped, rate-limited HTTP traffic with the authorized local or testbench target application.
 
-![Figure 7: Data Flow Diagram Level 0 — System Context](../diagrams/images/07_dfd_l0_context.png)
+![Figure 7: Data Flow Diagram Level 0 — System Context](../diagrams/png/07_dfd_l0_context.png)
 
-*Figure 7: Data Flow Diagram Level 0 — System Context (Source: [07_dfd_l0_context.mmd](../diagrams/07_dfd_l0_context.mmd)).*
+*Figure 7: Data Flow Diagram Level 0 — System Context (Source: [07_dfd_l0_context.mmd](../diagrams/mmd/07_dfd_l0_context.mmd)).*
 
 ### 3.5.2 DFD Level 1 — Internal Processes and Trust Boundaries
 
 Level 1 decomposes Process `0.0` into six internal processes (`1.0` through `6.0`) and three logical data stores (`D1` Projects and Scans, `D2` Endpoints and Findings, and `D3` Remediation KB) partitioned across three explicit Trust Boundaries: **TB1 (Developer Browser)**, **TB2 (Scanner Application Process)**, and **TB3 (Target Network Perimeter)**.
 
-![Figure 8: Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries](../diagrams/images/08_dfd_l1_trust_boundaries.png)
+![Figure 8: Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries](../diagrams/png/08_dfd_l1_trust_boundaries.png)
 
-*Figure 8: Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries (Source: [08_dfd_l1_trust_boundaries.mmd](../diagrams/08_dfd_l1_trust_boundaries.mmd)).*
+*Figure 8: Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries (Source: [08_dfd_l1_trust_boundaries.mmd](../diagrams/mmd/08_dfd_l1_trust_boundaries.mmd)).*
 
 ### Table 3.5: Trust Boundary Threat Mitigation Matrix
 
@@ -126,9 +126,9 @@ To support both everyday student development and repeatable empirical benchmarki
 1. **Core Local Stack (`docker-compose.yml`):** Provisions the non-root `scanner` container (`python:3.12-slim`, Uvicorn bound to port `8000`) backed by a named `scanner_data` volume storing the SQLite WAL database (`/app/data/scanner.db`). Declaring `extra_hosts: ["host.docker.internal:host-gateway"]` enables seamless host-loopback reachability across Windows, macOS, and Linux so developers can scan locally running apps (e.g., `http://host.docker.internal:5000`). Activating `--profile postgres` attaches an optional PostgreSQL 16 service (`postgres_data` volume) configured through `DATABASE_URL`.
 2. **Validation Testbench Stack (`docker-compose.testbench.yml`):** Provisions three intentionally vulnerable targets bound exclusively to host loopback (`127.0.0.1`) on an isolated `testbench_net` bridge network: **DVWA** (`vulnerables/web-dvwa:latest` on `127.0.0.1:8080:80`), **OWASP Juice Shop** (`bkimminich/juice-shop:latest` on `127.0.0.1:3000:3000`), and the local deterministic **VulnBench** (`127.0.0.1:5050:5050`).
 
-![Figure 9: Docker Compose Deployment and Network Topology](../diagrams/images/09_docker_deployment.png)
+![Figure 9: Docker Compose Deployment and Network Topology](../diagrams/png/09_docker_deployment.png)
 
-*Figure 9: Docker Compose Deployment and Network Topology (Source: [09_docker_deployment.mmd](../diagrams/09_docker_deployment.mmd)).*
+*Figure 9: Docker Compose Deployment and Network Topology (Source: [09_docker_deployment.mmd](../diagrams/mmd/09_docker_deployment.mmd)).*
 
 ### Table 3.6: Supported Deployment Profiles
 
@@ -149,25 +149,25 @@ Static component boundaries alone do not guarantee responsive UI updates, safe u
 
 Upon receiving `POST /api/projects/{id}/scans`, FastAPI validates the request schema and target allow-list, persists a `queued` scan record, submits execution to the bounded `ThreadPoolExecutor`, and immediately returns `202 Accepted`. The browser connects to `GET /api/scans/{id}/stream` via `EventSource` to receive real-time phase transitions, crawl counts, enriched finding summaries, and final risk-score completion telemetry.
 
-![Figure 10: End-to-End Scan Lifecycle Sequence Diagram](../diagrams/images/10_scan_lifecycle_sequence.png)
+![Figure 10: End-to-End Scan Lifecycle Sequence Diagram](../diagrams/png/10_scan_lifecycle_sequence.png)
 
-*Figure 10: End-to-End Scan Lifecycle Sequence Diagram (Source: [10_scan_lifecycle_sequence.mmd](../diagrams/10_scan_lifecycle_sequence.mmd)).*
+*Figure 10: End-to-End Scan Lifecycle Sequence Diagram (Source: [10_scan_lifecycle_sequence.mmd](../diagrams/mmd/10_scan_lifecycle_sequence.mmd)).*
 
 ### 3.7.2 Scan Cancellation and Per-Check Error Isolation Sequence
 
 Web applications under active student development frequently exhibit unhandled 500 errors, hung database queries, or mid-scan restarts. Figure 11 specifies two essential runtime resilience patterns: (1) **Per-Check Error Isolation**, wrapping every plugin invocation inside a structured `try/except` boundary that emits a non-fatal `check_warning` SSE event without aborting the scan, and (2) **Cooperative User Cancellation**, allowing `POST /api/scans/{id}/cancel` to signal a per-scan `threading.Event` so the orchestrator halts probing gracefully, preserves all previously committed findings, recomputes a partial risk score, and transitions the scan to `cancelled`.
 
-![Figure 11: Scan Cancellation and Per-Check Error Isolation Sequence](../diagrams/images/11_cancel_error_isolation_sequence.png)
+![Figure 11: Scan Cancellation and Per-Check Error Isolation Sequence](../diagrams/png/11_cancel_error_isolation_sequence.png)
 
-*Figure 11: Scan Cancellation and Per-Check Error Isolation Sequence (Source: [11_cancel_error_isolation_sequence.mmd](../diagrams/11_cancel_error_isolation_sequence.mmd)).*
+*Figure 11: Scan Cancellation and Per-Check Error Isolation Sequence (Source: [11_cancel_error_isolation_sequence.mmd](../diagrams/mmd/11_cancel_error_isolation_sequence.mmd)).*
 
 ### 3.7.3 Scan Execution Lifecycle State Machine
 
 Every scan row in `SCANS` adheres to a deterministic six-state finite state machine (`queued`, `crawling`, `scanning`, `completed`, `failed`, `cancelled`). Terminal states (`completed`, `cancelled`, `failed`) are immutable once persisted, guaranteeing consistent historical trends and deterministic cross-scan diff comparisons.
 
-![Figure 12: Scan Execution Lifecycle State Machine](../diagrams/images/12_scan_state_machine.png)
+![Figure 12: Scan Execution Lifecycle State Machine](../diagrams/png/12_scan_state_machine.png)
 
-*Figure 12: Scan Execution Lifecycle State Machine (Source: [12_scan_state_machine.mmd](../diagrams/12_scan_state_machine.mmd)).*
+*Figure 12: Scan Execution Lifecycle State Machine (Source: [12_scan_state_machine.mmd](../diagrams/mmd/12_scan_state_machine.mmd)).*
 
 ### Table 3.7: Scan Lifecycle State Transition and Invariant Specification
 
@@ -184,9 +184,9 @@ Every scan row in `SCANS` adheres to a deterministic six-state finite state mach
 
 The swimlane activity diagram coordinates responsibilities across all four operational lanes—Developer, FastAPI API, Scanner Engine, and Database and Remediation KB—illustrating the continuous iterative local security workflow (configure, scan, monitor, remediate, re-scan, compare, and export).
 
-![Figure 13: Cross-Component Swimlane Activity Diagram](../diagrams/images/13_swimlane_activity.png)
+![Figure 13: Cross-Component Swimlane Activity Diagram](../diagrams/png/13_swimlane_activity.png)
 
-*Figure 13: Cross-Component Swimlane Activity Diagram (Source: [13_swimlane_activity.mmd](../diagrams/13_swimlane_activity.mmd)).*
+*Figure 13: Cross-Component Swimlane Activity Diagram (Source: [13_swimlane_activity.mmd](../diagrams/mmd/13_swimlane_activity.mmd)).*
 
 ---
 
@@ -194,9 +194,9 @@ The swimlane activity diagram coordinates responsibilities across all four opera
 
 To satisfy **NFR-06 (Extensibility)** without coupling detection logic to orchestration or database persistence, the check subsystem applies the Strategy and Template Method design patterns around the abstract `BaseCheck` interface. Four intermediate abstract classes (`PassiveCheck`, `ActiveSafeCheck`, `DiscoveryCheck`, and `DeepAuthCheck`) encapsulate category-specific utilities—such as header/body analysis, safe non-destructive probe dispatching, Soft-404 wordlist filtering, and authenticated object-identifier comparison—while keeping each of the 17 concrete checks isolated in a single self-contained Python file.
 
-![Figure 14: Scanner Plugin Architecture Class Diagram](../diagrams/images/14_scanner_plugin_class_diagram.png)
+![Figure 14: Scanner Plugin Architecture Class Diagram](../diagrams/png/14_scanner_plugin_class_diagram.png)
 
-*Figure 14: Scanner Plugin Architecture Class Diagram (Source: [14_scanner_plugin_class_diagram.mmd](../diagrams/14_scanner_plugin_class_diagram.mmd)).*
+*Figure 14: Scanner Plugin Architecture Class Diagram (Source: [14_scanner_plugin_class_diagram.mmd](../diagrams/mmd/14_scanner_plugin_class_diagram.mmd)).*
 
 ### Single-File Plugin Authoring Contract
 

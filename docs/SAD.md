@@ -64,29 +64,29 @@ Each chapter is maintained as a standalone, version-controlled Markdown document
 
 ## List of Figures
 
-All 19 architectural, behavioral, flowchart, data, security, and benchmarking figures are maintained as both high-resolution rendered PNG/SVG images in `docs/diagrams/images/` and standalone Mermaid source files in `docs/diagrams/`.
+All 19 architectural, behavioral, flowchart, data, security, and benchmarking figures are maintained as both high-resolution rendered PNG/SVG images in `docs/diagrams/png/` and `docs/diagrams/svg/` and standalone Mermaid source files in `docs/diagrams/mmd/`.
 
 | Figure | Title | Host Chapter | Rendered Image (PNG) | Diagram Source (Mermaid) |
 | :---: | :--- | :---: | :--- | :--- |
-| **Figure 1** | As-Is Enterprise DAST vs. Proposed Lightweight Local Developer Workflow | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [01_as_is_vs_to_be.png](diagrams/images/01_as_is_vs_to_be.png) | [01_as_is_vs_to_be.mmd](diagrams/01_as_is_vs_to_be.mmd) |
-| **Figure 2** | Master End-to-End Vulnerability Scanner Execution Pipeline | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [02_master_scanner_pipeline.png](diagrams/images/02_master_scanner_pipeline.png) | [02_master_scanner_pipeline.mmd](diagrams/02_master_scanner_pipeline.mmd) |
-| **Figure 3** | System Use Case Diagram | [Chapter 2](sad_chapters/02_requirements_srs.md) | [03_use_case_diagram.png](diagrams/images/03_use_case_diagram.png) | [03_use_case_diagram.mmd](diagrams/03_use_case_diagram.mmd) |
-| **Figure 4** | C4 Level 1 — System Context Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [04_c4_l1_context.png](diagrams/images/04_c4_l1_context.png) | [04_c4_l1_context.mmd](diagrams/04_c4_l1_context.mmd) |
-| **Figure 5** | C4 Level 2 — Container Architecture Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [05_c4_l2_containers.png](diagrams/images/05_c4_l2_containers.png) | [05_c4_l2_containers.mmd](diagrams/05_c4_l2_containers.mmd) |
-| **Figure 6** | C4 Level 3 — Scanner Engine Component Architecture | [Chapter 3](sad_chapters/03_architecture_views.md) | [06_c4_l3_scanner_components.png](diagrams/images/06_c4_l3_scanner_components.png) | [06_c4_l3_scanner_components.mmd](diagrams/06_c4_l3_scanner_components.mmd) |
-| **Figure 7** | Data Flow Diagram Level 0 — System Context | [Chapter 3](sad_chapters/03_architecture_views.md) | [07_dfd_l0_context.png](diagrams/images/07_dfd_l0_context.png) | [07_dfd_l0_context.mmd](diagrams/07_dfd_l0_context.mmd) |
-| **Figure 8** | Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries | [Chapter 3](sad_chapters/03_architecture_views.md) | [08_dfd_l1_trust_boundaries.png](diagrams/images/08_dfd_l1_trust_boundaries.png) | [08_dfd_l1_trust_boundaries.mmd](diagrams/08_dfd_l1_trust_boundaries.mmd) |
-| **Figure 9** | Docker Compose Deployment and Network Topology | [Chapter 3](sad_chapters/03_architecture_views.md) | [09_docker_deployment.png](diagrams/images/09_docker_deployment.png) | [09_docker_deployment.mmd](diagrams/09_docker_deployment.mmd) |
-| **Figure 10** | End-to-End Scan Lifecycle Sequence Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [10_scan_lifecycle_sequence.png](diagrams/images/10_scan_lifecycle_sequence.png) | [10_scan_lifecycle_sequence.mmd](diagrams/10_scan_lifecycle_sequence.mmd) |
-| **Figure 11** | Scan Cancellation and Per-Check Error Isolation Sequence | [Chapter 3](sad_chapters/03_architecture_views.md) | [11_cancel_error_isolation_sequence.png](diagrams/images/11_cancel_error_isolation_sequence.png) | [11_cancel_error_isolation_sequence.mmd](diagrams/11_cancel_error_isolation_sequence.mmd) |
-| **Figure 12** | Scan Execution Lifecycle State Machine | [Chapter 3](sad_chapters/03_architecture_views.md) | [12_scan_state_machine.png](diagrams/images/12_scan_state_machine.png) | [12_scan_state_machine.mmd](diagrams/12_scan_state_machine.mmd) |
-| **Figure 13** | Cross-Component Swimlane Activity Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [13_swimlane_activity.png](diagrams/images/13_swimlane_activity.png) | [13_swimlane_activity.mmd](diagrams/13_swimlane_activity.mmd) |
-| **Figure 14** | Scanner Plugin Architecture Class Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [14_scanner_plugin_class_diagram.png](diagrams/images/14_scanner_plugin_class_diagram.png) | [14_scanner_plugin_class_diagram.mmd](diagrams/14_scanner_plugin_class_diagram.mmd) |
-| **Figure 15** | Third Normal Form (3NF) Entity-Relationship Diagram | [Chapter 4](sad_chapters/04_data_and_api_design.md) | [15_erd_3nf.png](diagrams/images/15_erd_3nf.png) | [15_erd_3nf.mmd](diagrams/15_erd_3nf.mmd) |
-| **Figure 16** | Pre-Request Scope Guardrail and Safety Decision Flow | [Chapter 5](sad_chapters/05_security_ethics_and_adrs.md) | [16_scope_guardrail_flow.png](diagrams/images/16_scope_guardrail_flow.png) | [16_scope_guardrail_flow.mmd](diagrams/16_scope_guardrail_flow.mmd) |
-| **Figure 17** | Target Detection Accuracy Benchmark Profile Across OWASP Categories | [Chapter 6](sad_chapters/06_validation_and_benchmarking.md) | [17_accuracy_benchmark_chart.png](diagrams/images/17_accuracy_benchmark_chart.png) | [17_accuracy_benchmark_chart.mmd](diagrams/17_accuracy_benchmark_chart.mmd) |
-| **Figure 18** | Target Crawler Coverage and Latency Profile Across Scan Modes | [Chapter 6](sad_chapters/06_validation_and_benchmarking.md) | [18_coverage_latency_chart.png](diagrams/images/18_coverage_latency_chart.png) | [18_coverage_latency_chart.mmd](diagrams/18_coverage_latency_chart.mmd) |
-| **Figure 19** | Classic Top-Down Master System Flowchart | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [19_master_system_flowchart.png](diagrams/images/19_master_system_flowchart.png) | [19_master_system_flowchart.mmd](diagrams/19_master_system_flowchart.mmd) |
+| **Figure 1** | As-Is Enterprise DAST vs. Proposed Lightweight Local Developer Workflow | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [01_as_is_vs_to_be.png](diagrams/png/01_as_is_vs_to_be.png) | [01_as_is_vs_to_be.mmd](diagrams/mmd/01_as_is_vs_to_be.mmd) |
+| **Figure 2** | Master End-to-End Vulnerability Scanner Execution Pipeline | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [02_master_scanner_pipeline.png](diagrams/png/02_master_scanner_pipeline.png) | [02_master_scanner_pipeline.mmd](diagrams/mmd/02_master_scanner_pipeline.mmd) |
+| **Figure 3** | System Use Case Diagram | [Chapter 2](sad_chapters/02_requirements_srs.md) | [03_use_case_diagram.png](diagrams/png/03_use_case_diagram.png) | [03_use_case_diagram.mmd](diagrams/mmd/03_use_case_diagram.mmd) |
+| **Figure 4** | C4 Level 1 — System Context Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [04_c4_l1_context.png](diagrams/png/04_c4_l1_context.png) | [04_c4_l1_context.mmd](diagrams/mmd/04_c4_l1_context.mmd) |
+| **Figure 5** | C4 Level 2 — Container Architecture Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [05_c4_l2_containers.png](diagrams/png/05_c4_l2_containers.png) | [05_c4_l2_containers.mmd](diagrams/mmd/05_c4_l2_containers.mmd) |
+| **Figure 6** | C4 Level 3 — Scanner Engine Component Architecture | [Chapter 3](sad_chapters/03_architecture_views.md) | [06_c4_l3_scanner_components.png](diagrams/png/06_c4_l3_scanner_components.png) | [06_c4_l3_scanner_components.mmd](diagrams/mmd/06_c4_l3_scanner_components.mmd) |
+| **Figure 7** | Data Flow Diagram Level 0 — System Context | [Chapter 3](sad_chapters/03_architecture_views.md) | [07_dfd_l0_context.png](diagrams/png/07_dfd_l0_context.png) | [07_dfd_l0_context.mmd](diagrams/mmd/07_dfd_l0_context.mmd) |
+| **Figure 8** | Data Flow Diagram Level 1 — Internal Processes and Trust Boundaries | [Chapter 3](sad_chapters/03_architecture_views.md) | [08_dfd_l1_trust_boundaries.png](diagrams/png/08_dfd_l1_trust_boundaries.png) | [08_dfd_l1_trust_boundaries.mmd](diagrams/mmd/08_dfd_l1_trust_boundaries.mmd) |
+| **Figure 9** | Docker Compose Deployment and Network Topology | [Chapter 3](sad_chapters/03_architecture_views.md) | [09_docker_deployment.png](diagrams/png/09_docker_deployment.png) | [09_docker_deployment.mmd](diagrams/mmd/09_docker_deployment.mmd) |
+| **Figure 10** | End-to-End Scan Lifecycle Sequence Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [10_scan_lifecycle_sequence.png](diagrams/png/10_scan_lifecycle_sequence.png) | [10_scan_lifecycle_sequence.mmd](diagrams/mmd/10_scan_lifecycle_sequence.mmd) |
+| **Figure 11** | Scan Cancellation and Per-Check Error Isolation Sequence | [Chapter 3](sad_chapters/03_architecture_views.md) | [11_cancel_error_isolation_sequence.png](diagrams/png/11_cancel_error_isolation_sequence.png) | [11_cancel_error_isolation_sequence.mmd](diagrams/mmd/11_cancel_error_isolation_sequence.mmd) |
+| **Figure 12** | Scan Execution Lifecycle State Machine | [Chapter 3](sad_chapters/03_architecture_views.md) | [12_scan_state_machine.png](diagrams/png/12_scan_state_machine.png) | [12_scan_state_machine.mmd](diagrams/mmd/12_scan_state_machine.mmd) |
+| **Figure 13** | Cross-Component Swimlane Activity Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [13_swimlane_activity.png](diagrams/png/13_swimlane_activity.png) | [13_swimlane_activity.mmd](diagrams/mmd/13_swimlane_activity.mmd) |
+| **Figure 14** | Scanner Plugin Architecture Class Diagram | [Chapter 3](sad_chapters/03_architecture_views.md) | [14_scanner_plugin_class_diagram.png](diagrams/png/14_scanner_plugin_class_diagram.png) | [14_scanner_plugin_class_diagram.mmd](diagrams/mmd/14_scanner_plugin_class_diagram.mmd) |
+| **Figure 15** | Third Normal Form (3NF) Entity-Relationship Diagram | [Chapter 4](sad_chapters/04_data_and_api_design.md) | [15_erd_3nf.png](diagrams/png/15_erd_3nf.png) | [15_erd_3nf.mmd](diagrams/mmd/15_erd_3nf.mmd) |
+| **Figure 16** | Pre-Request Scope Guardrail and Safety Decision Flow | [Chapter 5](sad_chapters/05_security_ethics_and_adrs.md) | [16_scope_guardrail_flow.png](diagrams/png/16_scope_guardrail_flow.png) | [16_scope_guardrail_flow.mmd](diagrams/mmd/16_scope_guardrail_flow.mmd) |
+| **Figure 17** | Target Detection Accuracy Benchmark Profile Across OWASP Categories | [Chapter 6](sad_chapters/06_validation_and_benchmarking.md) | [17_accuracy_benchmark_chart.png](diagrams/png/17_accuracy_benchmark_chart.png) | [17_accuracy_benchmark_chart.mmd](diagrams/mmd/17_accuracy_benchmark_chart.mmd) |
+| **Figure 18** | Target Crawler Coverage and Latency Profile Across Scan Modes | [Chapter 6](sad_chapters/06_validation_and_benchmarking.md) | [18_coverage_latency_chart.png](diagrams/png/18_coverage_latency_chart.png) | [18_coverage_latency_chart.mmd](diagrams/mmd/18_coverage_latency_chart.mmd) |
+| **Figure 19** | Classic Top-Down Master System Flowchart | [Chapter 1](sad_chapters/01_introduction_and_scope.md) | [19_master_system_flowchart.png](diagrams/png/19_master_system_flowchart.png) | [19_master_system_flowchart.mmd](diagrams/mmd/19_master_system_flowchart.mmd) |
 
 ---
 
@@ -96,12 +96,12 @@ All publication editions are generated reproducibly from the modular Markdown ch
 
 | Artifact | Path | Format & Intended Use | Build Command |
 | :--- | :--- | :--- | :--- |
-| **Diagram Image Assets** | `docs/diagrams/images/01..19.{svg,png}` | High-resolution vector SVGs and 2x DPI PNG figures for offline embedding | `python scripts/render_diagrams.py` |
-| **Unified Markdown Book** | [SAD_Book.md](SAD_Book.md) | Combined single-file formal Markdown graduation book with image references | `python scripts/build_sad_docx.py` |
-| **Microsoft Word Book** | [SAD_Book.docx](SAD_Book.docx) | Native OOXML `.docx` with Cover Page, TOC, List of Figures, 19 embedded PNGs, headers/footers, and academic styles | `python scripts/build_sad_docx.py` |
-| **Formal PDF Book** | [SAD_Book.pdf](SAD_Book.pdf) | Print-ready A4 PDF book with embedded offline figures for supervisor and committee submission | `python scripts/build_sad_pdf.py` |
-| **Offline Printable HTML** | [SAD_Printable.html](SAD_Printable.html) | Self-contained offline HTML5 edition with inline base64 PNG figures, clickable TOC/List of Figures, and A4 `@media print` CSS | `python scripts/build_sad_html.py` |
-| **Semester 1 Defense Presentation** | [PPTX](presentations/Semester1_Progress_Defense.pptx) · [PDF](presentations/Semester1_Progress_Defense.pdf) · [HTML](presentations/Semester1_Progress_Defense.html) | 12-slide 16:9 widescreen Semester 1 Progress & Architecture Defense deck (Chapters 1–3, 7 embedded figures, 100% offline) | `py -3.12 scripts/build_presentation.py` |
+| **Diagram Image Assets** | `docs/diagrams/{svg,png}/01..19.{svg,png}` | High-resolution vector SVGs and 2x DPI PNG figures for offline embedding | `python scripts/render_diagrams.py` |
+| **Unified Markdown Book** | [SAD_Book.md](books/md/SAD_Book.md) | Combined single-file formal Markdown graduation book with image references | `python scripts/build_sad_docx.py` |
+| **Microsoft Word Book** | [SAD_Book.docx](books/docx/SAD_Book.docx) | Native OOXML `.docx` with Cover Page, TOC, List of Figures, 19 embedded PNGs, headers/footers, and academic styles | `python scripts/build_sad_docx.py` |
+| **Formal PDF Book** | [SAD_Book.pdf](books/pdf/SAD_Book.pdf) | Print-ready A4 PDF book with embedded offline figures for supervisor and committee submission | `python scripts/build_sad_pdf.py` |
+| **Offline Printable HTML** | [SAD_Printable.html](books/html/SAD_Printable.html) | Self-contained offline HTML5 edition with inline base64 PNG figures, clickable TOC/List of Figures, and A4 `@media print` CSS | `python scripts/build_sad_html.py` |
+| **Semester 1 Defense Presentation** | [PPTX](presentations/pptx/Semester1_Progress_Defense.pptx) · [PDF](presentations/pdf/Semester1_Progress_Defense.pdf) · [HTML](presentations/html/Semester1_Progress_Defense.html) | 12-slide 16:9 widescreen Semester 1 Progress & Architecture Defense deck (Chapters 1–3, 7 embedded figures, 100% offline) | `py -3.12 scripts/build_presentation.py` |
 
 ### Semester Split Editions
 
@@ -109,8 +109,8 @@ Alongside the full combined graduation book (`SAD_Book.*`), two standalone semes
 
 | Semester Package | Included Scope | Printable PDF | Word Document (`.docx`) | Markdown Source | Standalone Figures (`PNG` & `SVG`) | Build Command |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Semester 1** | Chapters 1–3, 15 Figures (Figures 1–14, 19) | [SAD_Semester1_Book.pdf](semester_1/SAD_Semester1_Book.pdf) | [SAD_Semester1_Book.docx](semester_1/SAD_Semester1_Book.docx) | [SAD_Semester1_Book.md](semester_1/SAD_Semester1_Book.md) | [semester_1/images/](semester_1/images/) | `py -3.12 scripts/build_semester_editions.py` |
-| **Semester 2** | Chapters 4–6, 4 Figures (Figures 15–18) | [SAD_Semester2_Book.pdf](semester_2/SAD_Semester2_Book.pdf) | [SAD_Semester2_Book.docx](semester_2/SAD_Semester2_Book.docx) | [SAD_Semester2_Book.md](semester_2/SAD_Semester2_Book.md) | [semester_2/images/](semester_2/images/) | `py -3.12 scripts/build_semester_editions.py` |
+| **Semester 1** | Chapters 1–3, 15 Figures (Figures 1–14, 19) | [SAD_Semester1_Book.pdf](books/pdf/SAD_Semester1_Book.pdf) | [SAD_Semester1_Book.docx](books/docx/SAD_Semester1_Book.docx) | [SAD_Semester1_Book.md](books/md/SAD_Semester1_Book.md) | [diagrams/png/](diagrams/png/) · [svg/](diagrams/svg/) | `py -3.12 scripts/build_semester_editions.py` |
+| **Semester 2** | Chapters 4–6, 4 Figures (Figures 15–18) | [SAD_Semester2_Book.pdf](books/pdf/SAD_Semester2_Book.pdf) | [SAD_Semester2_Book.docx](books/docx/SAD_Semester2_Book.docx) | [SAD_Semester2_Book.md](books/md/SAD_Semester2_Book.md) | [diagrams/png/](diagrams/png/) · [svg/](diagrams/svg/) | `py -3.12 scripts/build_semester_editions.py` |
 
 ### Full Regeneration Sequence
 
