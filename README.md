@@ -122,7 +122,7 @@ python scripts/evaluate.py --auto-start-vulnbench --benchmark-all-profiles --wri
 ## Documentation
 
 - **Architecture Book:** [SAD.md](docs/SAD.md) · [Full PDF](docs/SAD_Book.pdf) · [Semester 1 PDF](docs/semester_1/SAD_Semester1_Book.pdf) · [Semester 2 PDF](docs/semester_2/SAD_Semester2_Book.pdf)
-- **Defense Presentation:** [Semester 1 Slides (PPTX)](docs/presentations/Semester1_Progress_Defense.pptx) · [PDF](docs/presentations/Semester1_Progress_Defense.pdf)
+- **Defense Presentation:** [Full Defense — Interactive HTML5 (SVG Zoom/Pan)](docs/presentations/Full-project/Full_Graduation_Defense.html) · [PowerPoint (PPTX)](docs/presentations/Full-project/Full_Graduation_Defense.pptx) · [Widescreen PDF](docs/presentations/Full-project/Full_Graduation_Defense.pdf)
 - **Validation Reports:** [VulnBench Accuracy Results](docs/TESTBENCH_RESULTS.md) · [Self-Scan Hardening Audit](docs/SELF_SCAN_REPORT.md)
 
 ---
